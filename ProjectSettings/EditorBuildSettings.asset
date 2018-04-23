@@ -4,4 +4,13 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/Menu.unity
+    guid: e226944eb81718f43ab8e37d65eff8ae
+  - enabled: 1
+    path: Assets/Scenes/KinectRecording.unity
+    guid: 3b1b5e382bc5b344f817de95223c6f7d
+  - enabled: 1
+    path: Assets/Scenes/KinectTest.unity
+    guid: 833d89826a3e383469175304d88403cd

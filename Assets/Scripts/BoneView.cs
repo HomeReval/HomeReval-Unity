@@ -60,11 +60,11 @@ public class BoneView : MonoBehaviour {
                 frame.GetAndRefreshBodyData(_bodies);
 
                 // Add body frame to recording list
-                recording.Add(_bodies[frame.BodyFrameSource.BodyCount-1]);
+                recording.Add(_bodies[0]);
 
                 if (_bodies[0].IsTracked)
                 {
-                    foreach (Windows.Kinect.Joint joint in _bodies[frame.BodyFrameSource.BodyCount - 1].Joints.Values)
+                    foreach (Windows.Kinect.Joint joint in _bodies[0].Joints.Values)
                     {
                         if (joint.TrackingState == TrackingState.NotTracked) continue;
 
