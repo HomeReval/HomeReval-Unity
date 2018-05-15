@@ -9,25 +9,57 @@ using System.IO.Compression;
 using System.Text;
 using System;
 using UnityEngine.Networking;
+using UnityEngine.SceneManagement;
 
 public class BoneView : MonoBehaviour {
 
 	private KinectSensor _sensor;
 	private BodyFrameReader _reader;
 
-    // Log file
-    private const string path = "Assets/Resources/kinect.json";
-    StreamWriter writer;
+    // Drawer
+    SkeletonDrawer skeletonDrawer;
+
+    // Get bonestructure from unity
+    public GameObject boneHead;
+    public GameObject boneNeck;
+    public GameObject boneSpineShoulder;
+    public GameObject boneSpineMid;
+    public GameObject boneSpineBase;
+
+    // Left arm
+    public GameObject boneShoulderLeft;
+    public GameObject boneElbowLeft;
+    public GameObject boneWristLeft;
+    public GameObject boneHandLeft;
+    public GameObject boneHandTipLeft;
+    public GameObject boneThumbLeft;
+
+    // Right arm
+    public GameObject boneShoulderRight;
+    public GameObject boneElbowRight;
+    public GameObject boneWristRight;
+    public GameObject boneHandRight;
+    public GameObject boneHandTipRight;
+    public GameObject boneThumbRight;
+
+    // Left leg
+    public GameObject boneHipLeft;
+    public GameObject boneKneeLeft;
+    public GameObject boneAnkleLeft;
+    public GameObject boneFootLeft;
+
+    // Right leg
+    public GameObject boneHipRight;
+    public GameObject boneKneeRight;
+    public GameObject boneAnkleRight;
+    public GameObject boneFootRight;
 
     // List of all detected bodies by kinect
     IList<Body> _bodies;
     List<Body> recording = new List<Body>();
-    GameObject[] gameObjects = new GameObject[25];
-    //static List<Body> trackedBodies = new List<Body>();
-
 
     void Start(){
-		_sensor = KinectSensor.GetDefault();
+        _sensor = KinectSensor.GetDefault();
 
 		if (_sensor != null) {
 
@@ -38,15 +70,41 @@ public class BoneView : MonoBehaviour {
 			}
 		}
 
-        writer = File.AppendText(path);
+        skeletonDrawer = new SkeletonDrawer {
+            BoneHead = boneHead,
+            BoneNeck = boneNeck,
+            BoneSpineShoulder = boneSpineShoulder,
+            BoneSpineMid = boneSpineMid,
+            BoneSpineBase = boneSpineBase,
 
-        // Create gameobjects to display body
-        for(int i = 0; i<gameObjects.Length; i++)
-        {
-            gameObjects[i] = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            //gameObjects[i].AddComponent<Rigidbody>();
-            gameObjects[i].transform.position = new Vector3(0, 0, 0);
-        }
+            // Left arm
+            BoneShoulderLeft = boneShoulderLeft,
+            BoneElbowLeft = boneElbowLeft,
+            BoneWristLeft = boneWristLeft,
+            BoneHandLeft = boneHandLeft,
+            BoneHandTipLeft = boneHandTipLeft,
+            BoneThumbLeft = boneThumbLeft,
+
+            // Right arm
+            BoneShoulderRight = boneShoulderRight,
+            BoneElbowRight = boneElbowRight,
+            BoneWristRight = boneWristRight,
+            BoneHandRight = boneHandRight,
+            BoneHandTipRight = boneHandTipRight,
+            BoneThumbRight = boneThumbRight,
+
+            // Left leg
+            BoneHipLeft = boneHipLeft,
+            BoneKneeLeft = boneKneeLeft,
+            BoneAnkleLeft = boneAnkleLeft,
+            BoneFootLeft = boneFootLeft,
+
+            // Right leg
+            BoneHipRight = boneHipRight,
+            BoneKneeRight = boneKneeRight,
+            BoneAnkleRight = boneAnkleRight,
+            BoneFootRight = boneFootRight
+        };
     }
 
 	void FixedUpdate(){
@@ -62,13 +120,15 @@ public class BoneView : MonoBehaviour {
                 // Add body frame to recording list
                 recording.Add(_bodies[0]);
 
-                if (_bodies[0].IsTracked)
+                foreach (var body in _bodies)
                 {
-                    foreach (Windows.Kinect.Joint joint in _bodies[0].Joints.Values)
+                    if (body != null)
                     {
-                        if (joint.TrackingState == TrackingState.NotTracked) continue;
-
-                        gameObjects[(int)joint.JointType].transform.position = new Vector3(joint.Position.X * 10, joint.Position.Y * 10, joint.Position.Z * 10);
+                        if (body.IsTracked)
+                        {
+                            skeletonDrawer.DrawSkeleton(body);
+                            //DrawSkeleton(body);
+                        }
                     }
                 }
 
@@ -99,11 +159,89 @@ public class BoneView : MonoBehaviour {
                 frame.Dispose();
             }
 		}
-	}
+
+        if (Input.GetKeyDown("space"))
+        {
+            RecordingSession.Recording = recording;
+            SceneManager.LoadScene(3);
+        }
+
+
+    }
+
+    /*private void DrawSkeleton(Body body)
+    {
+        if (body == null) return;
+
+        // Head
+        DrawJoint(BoneHead, body.Joints[JointType.Head]);
+        // Neck
+        DrawJoint(BoneNeck, body.Joints[JointType.Neck]);
+        //SpineShoulder
+        DrawJoint(BoneSpineShoulder, body.Joints[JointType.SpineShoulder]);
+        //SpineMid
+        DrawJoint(BoneSpineMid, body.Joints[JointType.SpineMid]);
+        //SpineBase
+        DrawJoint(BoneSpineBase, body.Joints[JointType.SpineBase]);
+
+        //ShoulderLeft
+        DrawJoint(BoneShoulderLeft, body.Joints[JointType.ShoulderLeft]);
+        //ElbowLeft
+        DrawJoint(BoneElbowLeft, body.Joints[JointType.ElbowLeft]);
+        //WristLeft
+        DrawJoint(BoneWristLeft, body.Joints[JointType.WristLeft]);
+        //HandLeft
+        DrawJoint(BoneHandLeft, body.Joints[JointType.HandLeft]);
+        //HandTipLeft
+        DrawJoint(BoneHandTipLeft, body.Joints[JointType.HandTipLeft]);
+        //ThumbLeft
+        DrawJoint(BoneThumbLeft, body.Joints[JointType.ThumbLeft]);
+
+
+        //ShoulderRight
+        DrawJoint(BoneShoulderRight, body.Joints[JointType.ShoulderRight]);
+        //ElbowRight
+        DrawJoint(BoneElbowRight, body.Joints[JointType.ElbowRight]);
+        //WristRight
+        DrawJoint(BoneWristRight, body.Joints[JointType.WristRight]);
+        //HandRight
+        DrawJoint(BoneHandRight, body.Joints[JointType.HandRight]);
+        //HandTipRight
+        DrawJoint(BoneHandTipRight, body.Joints[JointType.HandTipRight]);
+        //ThumbRight
+        DrawJoint(BoneThumbRight, body.Joints[JointType.ThumbRight]);
+
+        //HipLeft
+        DrawJoint(BoneHipLeft, body.Joints[JointType.HipLeft]);
+        //KneeLeft
+        DrawJoint(BoneKneeLeft, body.Joints[JointType.KneeLeft]);
+        //AnkleLeft
+        DrawJoint(BoneAnkleLeft, body.Joints[JointType.AnkleLeft]);
+        //FootLeft
+        DrawJoint(BoneFootLeft, body.Joints[JointType.FootLeft]);
+
+        //HipRight
+        DrawJoint(BoneHipRight, body.Joints[JointType.HipRight]);
+        //KneeRight
+        DrawJoint(BoneKneeRight, body.Joints[JointType.KneeRight]);
+        //AnkleRight
+        DrawJoint(BoneAnkleRight, body.Joints[JointType.AnkleRight]);
+        //FootRight
+        DrawJoint(BoneFootRight, body.Joints[JointType.FootRight]);
+    }
+
+    private void DrawJoint( GameObject gameObject, Windows.Kinect.Joint joint)
+    {
+        gameObject.transform.position =
+            new Vector3(
+                joint.Position.X * 4,
+                joint.Position.Y * 4,
+                joint.Position.Z * 4);
+    }*/
 
     void OnApplicationQuit()
     {
-        if(writer != null)
+        /*if(writer != null)
         {
             // Convert complete recording to JSON
             // Compress recording and convert to base 64
@@ -116,10 +254,10 @@ public class BoneView : MonoBehaviour {
             StartCoroutine(postRequest("http://localhost:8000/exercises", json));
             //writer.WriteLine(rec);
             writer.Close();
-        }
+        }*/
     }
 
-    private IEnumerator postRequest(string url, string json)
+    /*private IEnumerator postRequest(string url, string json)
     {
         var uwr = new UnityWebRequest(url, "POST");
         byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
@@ -184,6 +322,8 @@ public class BoneView : MonoBehaviour {
 
             return Encoding.UTF8.GetString(mso.ToArray());
         }
-    }
+    }*/
+
+
 
 }
