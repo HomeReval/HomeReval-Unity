@@ -7,6 +7,7 @@ namespace HomeReval.Daos
 {
     public class ExerciseRecording
     {
-        public List<ExerciseFrame> ExerciseFrames { get; set; }
+        private List<ExerciseFrame> exerciseFrames = new List<ExerciseFrame>();
+        public List<ExerciseFrame> ExerciseFrames { get {return exerciseFrames ;} }
     }
 }

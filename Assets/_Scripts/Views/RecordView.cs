@@ -10,20 +10,28 @@ using System.Text;
 using System;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
+using HomeReval.Daos;
 
-public class BoneView : MonoBehaviour {
+public class RecordView : MonoBehaviour {
 
 	private KinectSensor _sensor;
 	private BodyFrameReader _reader;
 
     private HomeRevalSession homeRevalSession;
 
+    // Local session
+    private bool recording = false;
+    private ExerciseRecording currentExerciseRecording;
+
+    // GameObjects
+    public GameObject playButton;
+    public GameObject stopButton;
+
     // Drawers
     private List<SkeletonDrawer> skeletonDrawers = new List<SkeletonDrawer>();
 
     // List of all detected bodies by kinect
-    IList<Body> _bodies;
-    List<Body> recording = new List<Body>();
+    private IList<Body> _bodies;
 
     void Start(){
         _sensor = KinectSensor.GetDefault();
@@ -51,6 +59,15 @@ public class BoneView : MonoBehaviour {
         }
 
         homeRevalSession = HomeRevalSession.Instance;
+
+        // Create temp current recording
+        homeRevalSession.CurrentRecording = new Exercise {
+            StartDate = DateTime.Today,
+            EndDate = DateTime.Today.AddMonths(1),
+            Name = "Dit is een test exercise",
+            Description = "Omschrijving van test exercise",
+            Amount = 10
+        };
     }
 
 	void FixedUpdate(){
@@ -64,37 +81,44 @@ public class BoneView : MonoBehaviour {
                 frame.GetAndRefreshBodyData(_bodies);
 
                 // Add body frame to recording list
-                
 
+                // Display only first active body
                 for (int i = 0; i < frame.BodyFrameSource.BodyCount; i++)
                 {
                     if (_bodies[i] != null)
                     {
                         if (_bodies[i].IsTracked)
                         {
-                            Debug.Log(i);
                             skeletonDrawers[i].DrawSkeleton(_bodies[i]);
+                            if (recording)
+                            {
+                                Debug.Log("Recording!");
+                                //Debug.Log(currentExerciseRecording);
+                                currentExerciseRecording.ExerciseFrames.Add(new ExerciseFrame{
+                                    Body = _bodies[i]
+                                });
+                            }
                             //homeRevalSession.Recording.Add(new Assets.RecordingFrame() /*{ Body = _bodies[i] }*/);
-                        }
-                        else
-                        {
-                            skeletonDrawers[i].Untracked();
+
+                            // Exit after first tracked body is found
+                            break;
                         }
                     }
                 }
 
-                // Clear frame to get a new one
-                frame.Dispose();
+                // Disable untracked bodies
+                for (int i = 0; i < frame.BodyFrameSource.BodyCount; i++)
+                {
+                    if (!_bodies[i].IsTracked && skeletonDrawers[i].Tracked)
+                    {
+                        skeletonDrawers[i].Untracked();
+                    }
+                }
+
+                    // Clear frame to get a new one
+                    frame.Dispose();
             }
 		}
-
-        if (Input.GetKeyDown("space"))
-        {
-            //Debug.Log(JsonConvert.SerializeObject(homeRevalSession.Recording));
-            //RecordingSession.Recording = recording;
-            //SceneManager.LoadScene(3);
-        }
-
 
     }
 
@@ -182,6 +206,45 @@ public class BoneView : MonoBehaviour {
             return Encoding.UTF8.GetString(mso.ToArray());
         }
     }*/
+
+    public void OnBtnStartRecording()
+    {
+        // Create new recording
+        currentExerciseRecording = new ExerciseRecording();
+
+        recording = true;
+        stopButton.SetActive(true);
+        playButton.SetActive(false);
+    }
+
+    public void OnBtnStopRecording()
+    {
+        if (currentExerciseRecording != null)
+        {
+
+            Debug.Log(currentExerciseRecording);
+            // Save current recording
+            homeRevalSession
+                .CurrentRecording
+                .ExerciseRecordings
+                .Add(currentExerciseRecording);
+
+            currentExerciseRecording = null;
+        }
+
+        recording = false;
+        stopButton.SetActive(false);
+        playButton.SetActive(true);
+    }
+
+    public void OnBtnSaveRecording()
+    {
+        foreach(ExerciseRecording e in homeRevalSession.CurrentRecording.ExerciseRecordings)
+        {
+            Debug.Log(JsonConvert.SerializeObject(e));
+        }
+        
+    }
 
 
 

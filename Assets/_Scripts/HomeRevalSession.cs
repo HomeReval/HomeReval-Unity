@@ -31,6 +31,9 @@ public sealed class HomeRevalSession
         }
     }
 
+    // User Session
     public List<Exercise> Exercises { get; set; }
+    public Exercise CurrentRecording { get; set; }
+    public string Username { get; set; }
     public string Token { get; set; }
 }

@@ -160,4 +160,12 @@ public class SkeletonDrawer
                 joint.Position.Y * 4,
                 joint.Position.Z * 4);
     }
+
+    public bool Tracked
+    {
+        get
+        {
+            return skeleton.activeSelf;
+        }
+    }
 }
