@@ -5,7 +5,7 @@ using System.Text;
 
 namespace HomeReval.Daos
 {
-    class Exercise
+    public class Exercise
     {
         public DateTime StartDate { get; set; }
 

@@ -28,6 +28,8 @@ public class BoneView : MonoBehaviour {
     void Start(){
         _sensor = KinectSensor.GetDefault();
 
+        //_sensor.IsAvailable;
+
 		if (_sensor != null) {
 
 			_reader = _sensor.BodyFrameSource.OpenReader();
@@ -37,9 +39,15 @@ public class BoneView : MonoBehaviour {
 			}
 		}
 
+        // Create bodies 
+        GameObject bodies = new GameObject();
+        bodies.name = "bodies";
+
         for(int i = 0; i<6; i++)
         {
-            skeletonDrawers.Add(new SkeletonDrawer((GameObject)Instantiate(Resources.Load("Prefabs/Body"))));
+            GameObject body = (GameObject)Instantiate(Resources.Load("Prefabs/Body"));
+            skeletonDrawers.Add(new SkeletonDrawer(body));
+            body.transform.SetParent(bodies.transform);
         }
 
         homeRevalSession = HomeRevalSession.Instance;
@@ -66,7 +74,7 @@ public class BoneView : MonoBehaviour {
                         {
                             Debug.Log(i);
                             skeletonDrawers[i].DrawSkeleton(_bodies[i]);
-                            homeRevalSession.Recording.Add(new Assets.RecordingFrame() /*{ Body = _bodies[i] }*/);
+                            //homeRevalSession.Recording.Add(new Assets.RecordingFrame() /*{ Body = _bodies[i] }*/);
                         }
                         else
                         {
@@ -82,7 +90,7 @@ public class BoneView : MonoBehaviour {
 
         if (Input.GetKeyDown("space"))
         {
-            Debug.Log(JsonConvert.SerializeObject(homeRevalSession.Recording));
+            //Debug.Log(JsonConvert.SerializeObject(homeRevalSession.Recording));
             //RecordingSession.Recording = recording;
             //SceneManager.LoadScene(3);
         }

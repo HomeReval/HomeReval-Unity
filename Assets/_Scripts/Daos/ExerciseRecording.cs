@@ -5,7 +5,7 @@ using System.Text;
 
 namespace HomeReval.Daos
 {
-    class ExerciseRecording
+    public class ExerciseRecording
     {
         public List<ExerciseFrame> ExerciseFrames { get; set; }
     }

@@ -12,10 +12,7 @@ public sealed class HomeRevalSession
 
 
 
-    private HomeRevalSession()
-    {
-
-    }
+    private HomeRevalSession() { }
 
     public static HomeRevalSession Instance
     {
@@ -35,4 +32,5 @@ public sealed class HomeRevalSession
     }
 
     public List<Exercise> Exercises { get; set; }
+    public string Token { get; set; }
 }
