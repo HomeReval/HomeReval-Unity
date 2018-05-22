@@ -44,7 +44,7 @@ public class ViewScript : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        skeletonDrawer = new SkeletonDrawer
+        skeletonDrawer = new SkeletonDrawer((GameObject)Instantiate(Resources.Load("Prefabs/Body")));/*
         {
             BoneHead = boneHead,
             BoneNeck = boneNeck,
@@ -79,8 +79,8 @@ public class ViewScript : MonoBehaviour {
             BoneKneeRight = boneKneeRight,
             BoneAnkleRight = boneAnkleRight,
             BoneFootRight = boneFootRight
-        };
-        Debug.Log(RecordingSession.Recording.Count);
+        };*/
+        //Debug.Log(RecordingSession.Recording.Count);
 	}
 	
 	// Update is called once per frame
