@@ -1686,9 +1686,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 840875054}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dcb964773a00da4468e39464ebc2b9af, type: 3}
+  m_Script: {fileID: 11500000, guid: e275182c440d22b429a5c507f3edd325, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mainMenu: {fileID: 1967625044}
+  optionsMenu: {fileID: 1368370337}
+  loginScreen: {fileID: 1299385400}
 --- !u!1 &873843244
 GameObject:
   m_ObjectHideFlags: 0
@@ -2682,7 +2685,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 983d6a2279cc54e469425d75e7056c85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mm: {fileID: 0}
+  mm: {fileID: 840875056}
   messageText: {fileID: 207910802}
 --- !u!1 &1368370337
 GameObject:
@@ -2731,9 +2734,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80c6367ddebd427438a78a7702103992, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mm: {fileID: 0}
-  audioMixer: {fileID: 0}
-  volumePercenentage: {fileID: 0}
+  mm: {fileID: 840875056}
+  audioMixer: {fileID: 24100000, guid: b2fccf7d994066942b1ec15302714815, type: 2}
+  volumePercenentage: {fileID: 522149315}
   storedVolume: 0
   volumeSlider: {fileID: 1371985450}
 --- !u!1 &1371985448
@@ -3201,9 +3204,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1533959391}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f505b4da28a03e84eb23fad3cabf23f1, type: 3}
+  m_Script: {fileID: 11500000, guid: bbea84fb2051eb94591f90ae7d5870a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isConnected: 0
+  state: {fileID: 264198932}
 --- !u!1 &1553820774
 GameObject:
   m_ObjectHideFlags: 0
@@ -3677,9 +3682,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1705574498}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3bf286653ae590d468e9678ad0a1568e, type: 3}
+  m_Script: {fileID: 11500000, guid: 9567b8ca8c144314bb6d3032b9689c72, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mm: {fileID: 840875056}
 --- !u!1 &1744958050
 GameObject:
   m_ObjectHideFlags: 0
@@ -4085,7 +4091,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e3e1b4d055e25f4b8fde3ee3579e363, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mm: {fileID: 0}
+  mm: {fileID: 840875056}
 --- !u!1 &2040354220
 GameObject:
   m_ObjectHideFlags: 0
