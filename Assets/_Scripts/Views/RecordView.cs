@@ -11,6 +11,7 @@ using System;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using HomeReval.Daos;
+using Http;
 
 public class RecordView : MonoBehaviour {
 
@@ -26,6 +27,9 @@ public class RecordView : MonoBehaviour {
     // GameObjects
     public GameObject playButton;
     public GameObject stopButton;
+
+    // Http requests
+    private Request request = new Request();
 
     // Drawers
     private List<SkeletonDrawer> skeletonDrawers = new List<SkeletonDrawer>();
@@ -122,24 +126,6 @@ public class RecordView : MonoBehaviour {
 
     }
 
-    void OnApplicationQuit()
-    {
-        /*if(writer != null)
-        {
-            // Convert complete recording to JSON
-            // Compress recording and convert to base 64
-            string rec = Convert.ToBase64String(Zip(JsonConvert.SerializeObject(recording)));
-
-            string json = "{\"name\": \"test\", \"description\": \"test\", \"exerciseRecordings\": [{\"recording\": \"" + rec+ "\"}]}";
-
-            Debug.Log(json);
-
-            StartCoroutine(postRequest("http://localhost:8000/exercises", json));
-            //writer.WriteLine(rec);
-            writer.Close();
-        }*/
-    }
-
     /*private IEnumerator postRequest(string url, string json)
     {
         var uwr = new UnityWebRequest(url, "POST");
@@ -160,7 +146,7 @@ public class RecordView : MonoBehaviour {
         {
             Debug.Log("Received: " + uwr.downloadHandler.text);
         }
-    }
+    }*/
 
 
     private void CopyTo(Stream src, Stream dest)
@@ -205,7 +191,7 @@ public class RecordView : MonoBehaviour {
 
             return Encoding.UTF8.GetString(mso.ToArray());
         }
-    }*/
+    }
 
     public void OnBtnStartRecording()
     {
@@ -239,10 +225,18 @@ public class RecordView : MonoBehaviour {
 
     public void OnBtnSaveRecording()
     {
-        foreach(ExerciseRecording e in homeRevalSession.CurrentRecording.ExerciseRecordings)
+        string exerciseRecording = Convert.ToBase64String(Zip(JsonConvert.SerializeObject(homeRevalSession.CurrentRecording.ExerciseRecordings)));
+        //homeRevalSession.KinectRecording = data;
+
+        string json = "{\"name\": \"" + homeRevalSession.CurrentRecording.Name + "\", \"description\": \"" + homeRevalSession.CurrentRecording.Description + "\", \"" + homeRevalSession.CurrentRecording.Amount + "\" \"exerciseRecordings\": \"" + exerciseRecording + "\"}";
+
+        System.IO.File.WriteAllText(@"C:\Users\Stefan\Documents\School\ProjectB\exercise.json", json);
+        Debug.Log(json);
+        //request.Post("homereval.ga:5000/exercise", json);
+        /*foreach (ExerciseRecording e in homeRevalSession.CurrentRecording.ExerciseRecordings)
         {
             Debug.Log(JsonConvert.SerializeObject(e));
-        }
+        }*/
         
     }
 
