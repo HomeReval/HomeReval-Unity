@@ -20,5 +20,6 @@ namespace HomeReval.Daos
         public List<ExerciseRecording> ExerciseRecordings { get { return exerciseRecordings; } }
 
         public int Amount { get; set; }
+
     }
 }

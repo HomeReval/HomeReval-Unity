@@ -25,6 +25,7 @@ public class LoginScreen : MonoBehaviour {
     public void PassTextChanged(string input)
     {
         password = input;
+        Debug.Log(password);
     }
 
     public void Login()
