@@ -1,15 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 using Windows.Kinect;
 using Newtonsoft.Json;
-using System.IO;
-using System.IO.Compression;
-using System.Text;
 using System;
-using UnityEngine.Networking;
-using UnityEngine.SceneManagement;
 using HomeReval.Daos;
 
 using Views;
