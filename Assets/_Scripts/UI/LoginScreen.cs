@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using Helpers;
+using Newtonsoft.Json.Linq;
+using System;
 
 public class LoginScreen : MonoBehaviour {
 
@@ -12,9 +14,6 @@ public class LoginScreen : MonoBehaviour {
 
     string username = "";
     string password = "";
-
-    string correctUsername = "henk";
-    string correctPassword = "wachtwoord123";
 
     public static bool loggedIn = false;
 
@@ -33,13 +32,24 @@ public class LoginScreen : MonoBehaviour {
 
     public void Login()
     {
-        request.Post("/user/login", "{json}");
-        loggedIn = true;
 
+        
+        
         //windowmanagement
-        mm.HideLogin();
-        mm.ShowMainMenu();
+        //mm.HideLogin();
+        //mm.ShowMainMenu();
+
         //APICALL
+        var jsonObject = new JObject();
+        jsonObject.Add("Username", username);
+        jsonObject.Add("Password", password);
+
+        Debug.Log(jsonObject);
+        Debug.Log(jsonObject.ToString());
+
+        //Debug.Log(request.Post("/user/login", jsonObject.ToString()));
+        
+
     }
 
 }
