@@ -2,7 +2,6 @@
 using TMPro;
 using Helpers;
 
-
 public class LoginScreen : MonoBehaviour {
 
     public MenuManager mm;
@@ -30,11 +29,14 @@ public class LoginScreen : MonoBehaviour {
     public void PassTextChanged(string input)
     {
         password = input;
+        Debug.Log(password);
     }
 
     public void Login()
     {
-        
+
+
+
         //windowmanagement
         //mm.HideLogin();
         //mm.ShowMainMenu();
@@ -45,7 +47,6 @@ public class LoginScreen : MonoBehaviour {
         StartCoroutine(request.Post("/user/login","{ \"username\" : \"" + username + "\", \"password\" : \"" + password + "\" }", 
             success => Debug.Log("SUCCESS" + success), 
             error => Debug.Log("ERROR" + error)));        
-
     }
 
 }
