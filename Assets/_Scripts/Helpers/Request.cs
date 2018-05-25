@@ -6,9 +6,9 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace Http
+namespace Helpers
 {
-    class Request : MonoBehaviour
+    class Request
     {
 
         private HomeRevalSession homeRevalSession;
@@ -18,14 +18,14 @@ namespace Http
             homeRevalSession = HomeRevalSession.Instance;
         }
 
-        public void Get(string url, string json)
+        public IEnumerator Get(string url, string json)
         {
-            StartCoroutine(getRequest(url, json));
+            return getRequest(url, json);
         }
 
-        public void Post(string url, string json)
+        public IEnumerator Post(string url, string json)
         {
-            StartCoroutine(postRequest(url, json));
+            return postRequest(url, json);
         }
 
         private IEnumerator getRequest(string url, string json)
@@ -35,7 +35,7 @@ namespace Http
             uwr.uploadHandler = (UploadHandler)new UploadHandlerRaw(jsonToSend);
             uwr.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
             uwr.SetRequestHeader("Content-Type", "application/json");
-            uwr.SetRequestHeader("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTUyNTM0NTIwMn0.LINprnMRZeaphdaYXB8e7BldpFs0FK7XcxheTdWwqP5q-wJ3BLMTZ_bgcbyKXhYwyq6d-gMtm2jtK0DYo_GjqQ");
+            uwr.SetRequestHeader("Authorization", "Bearer " + homeRevalSession.Token);
 
             //Send the request then wait here until it returns
             yield return uwr.SendWebRequest();
@@ -57,7 +57,7 @@ namespace Http
             uwr.uploadHandler = (UploadHandler)new UploadHandlerRaw(jsonToSend);
             uwr.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
             uwr.SetRequestHeader("Content-Type", "application/json");
-            uwr.SetRequestHeader("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTUyNTM0NTIwMn0.LINprnMRZeaphdaYXB8e7BldpFs0FK7XcxheTdWwqP5q-wJ3BLMTZ_bgcbyKXhYwyq6d-gMtm2jtK0DYo_GjqQ");
+            uwr.SetRequestHeader("Authorization", "Bearer " + homeRevalSession.Token);
 
             //Send the request then wait here until it returns
             yield return uwr.SendWebRequest();

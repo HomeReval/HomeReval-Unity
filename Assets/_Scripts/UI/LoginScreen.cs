@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using Helpers;
 
 public class LoginScreen : MonoBehaviour {
 
@@ -17,6 +18,8 @@ public class LoginScreen : MonoBehaviour {
 
     public static bool loggedIn = false;
 
+    private Request request = new Request();
+
     public void UserTextChanged(string input)
     {
         username = input;
@@ -29,6 +32,7 @@ public class LoginScreen : MonoBehaviour {
 
     public void Login()
     {
+        request.Post("/user/login", "{json}");
         loggedIn = true;
 
         //windowmanagement
