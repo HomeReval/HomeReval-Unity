@@ -5,6 +5,7 @@ using TMPro;
 using Helpers;
 using Newtonsoft.Json.Linq;
 using System;
+using UnityEngine.Networking;
 
 public class LoginScreen : MonoBehaviour {
 
@@ -27,14 +28,11 @@ public class LoginScreen : MonoBehaviour {
     public void PassTextChanged(string input)
     {
         password = input;
-        Debug.Log(password);
     }
 
     public void Login()
     {
-
-
-
+        
         //windowmanagement
         //mm.HideLogin();
         //mm.ShowMainMenu();
@@ -42,6 +40,10 @@ public class LoginScreen : MonoBehaviour {
         //APICALL
         Debug.Log("{\"username\":\"" + username + "\" \"password\":\"" + password + "\"}");
         Debug.Log(request.Post("/user/login", "{\"username\":\""+username+ "\" \"password\":\"" + password + "\"}"));
+
+
+        
+
     }
 
 }
