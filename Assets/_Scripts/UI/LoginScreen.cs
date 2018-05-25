@@ -33,23 +33,15 @@ public class LoginScreen : MonoBehaviour {
     public void Login()
     {
 
-        
-        
+
+
         //windowmanagement
         //mm.HideLogin();
         //mm.ShowMainMenu();
 
         //APICALL
-        var jsonObject = new JObject();
-        jsonObject.Add("Username", username);
-        jsonObject.Add("Password", password);
-
-        Debug.Log(jsonObject);
-        Debug.Log(jsonObject.ToString());
-
-        //Debug.Log(request.Post("/user/login", jsonObject.ToString()));
-        
-
+        Debug.Log("{\"username\":\"" + username + "\" \"password\":\"" + password + "\"}");
+        Debug.Log(request.Post("/user/login", "{\"username\":\""+username+ "\" \"password\":\"" + password + "\"}"));
     }
 
 }
