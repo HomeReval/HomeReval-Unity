@@ -1,10 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using TMPro;
 using Helpers;
-using Newtonsoft.Json.Linq;
-using System;
+
 
 public class LoginScreen : MonoBehaviour {
 
@@ -37,9 +34,7 @@ public class LoginScreen : MonoBehaviour {
 
     public void Login()
     {
-
-
-
+        
         //windowmanagement
         //mm.HideLogin();
         //mm.ShowMainMenu();
@@ -50,6 +45,7 @@ public class LoginScreen : MonoBehaviour {
         StartCoroutine(request.Post("/user/login","{ \"username\" : \"" + username + "\", \"password\" : \"" + password + "\" }", 
             success => Debug.Log("SUCCESS" + success), 
             error => Debug.Log("ERROR" + error)));        
+
     }
 
 }
