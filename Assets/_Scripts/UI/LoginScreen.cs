@@ -19,6 +19,12 @@ public class LoginScreen : MonoBehaviour {
 
     private Request request = new Request();
 
+    void Awake()
+    {
+        request.AddPostCompletedHandler(response => Debug.Log(response));
+        request.AddPostErrorHandler(response => Debug.Log(response));
+    }
+
     public void UserTextChanged(string input)
     {
         username = input;
@@ -27,7 +33,6 @@ public class LoginScreen : MonoBehaviour {
     public void PassTextChanged(string input)
     {
         password = input;
-        Debug.Log(password);
     }
 
     public void Login()
@@ -39,9 +44,12 @@ public class LoginScreen : MonoBehaviour {
         //mm.HideLogin();
         //mm.ShowMainMenu();
 
+        Debug.Log("{ \"username\" : \""+username+ "\", \"password\" : \"" + password + "\" }");
+
         //APICALL
-        Debug.Log("{\"username\":\"" + username + "\" \"password\":\"" + password + "\"}");
-        Debug.Log(request.Post("/user/login", "{\"username\":\""+username+ "\" \"password\":\"" + password + "\"}"));
+        StartCoroutine(request.Post("/user/login","{ \"username\" : \"" + username + "\", \"password\" : \"" + password + "\" }", 
+            success => Debug.Log("SUCCESS" + success), 
+            error => Debug.Log("ERROR" + error)));        
     }
 
 }

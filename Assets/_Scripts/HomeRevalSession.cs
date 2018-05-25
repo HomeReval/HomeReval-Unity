@@ -36,5 +36,6 @@ public sealed class HomeRevalSession
     public Exercise CurrentRecording { get; set; }
     public string Username { get; set; }
     public string Token { get; set; }
+    public string RefreshToken { get; set; }
     public byte[] KinectRecording { get; set; }
 }
