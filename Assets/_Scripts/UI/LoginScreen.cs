@@ -38,15 +38,15 @@ public class LoginScreen : MonoBehaviour {
 
 
         //windowmanagement
-        //mm.HideLogin();
-        //mm.ShowMainMenu();
+        mm.HideLogin();
+        mm.ShowMainMenu();
 
-        Debug.Log("{ \"username\" : \""+username+ "\", \"password\" : \"" + password + "\" }");
+        /*Debug.Log("{ \"username\" : \""+username+ "\", \"password\" : \"" + password + "\" }");
 
         //APICALL
         StartCoroutine(request.Post("/user/login","{ \"username\" : \"" + username + "\", \"password\" : \"" + password + "\" }", 
             success => Debug.Log("SUCCESS" + success), 
-            error => Debug.Log("ERROR" + error)));        
+            error => Debug.Log("ERROR" + error))); */       
     }
 
 }

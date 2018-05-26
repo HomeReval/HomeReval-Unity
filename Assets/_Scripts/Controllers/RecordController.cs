@@ -8,6 +8,8 @@ using HomeReval.Daos;
 
 using Views;
 using Helpers;
+using TMPro;
+using UnityEngine.UI;
 
 namespace Controllers
 {
@@ -17,6 +19,7 @@ namespace Controllers
         // GameObjects
         public GameObject playButton;
         public GameObject stopButton;
+        public GameObject scrollViewContent;
 
         // Kinect imports
         private KinectSensor _sensor;
@@ -56,6 +59,19 @@ namespace Controllers
 
             // Get singleton session instance
             homeRevalSession = HomeRevalSession.Instance;
+
+            if (homeRevalSession.CurrentRecording == null)
+            {
+                homeRevalSession.CurrentRecording = new Exercise
+                {
+                    StartDate = DateTime.Today,
+                    EndDate = DateTime.Today.AddDays(20),
+                    Amount = 5,
+                    Name = "test",
+                    Description = "test desc"
+
+                };
+            }
         }
 
         void FixedUpdate()
@@ -77,10 +93,12 @@ namespace Controllers
                         {
                             if (_bodies[i].IsTracked)
                             {
+                                Debug.Log("tracked : " + i);
                                 //skeletonDrawers[i].DrawSkeleton(_bodies[i]);
                                 bodyDrawer.DrawSkeleton(_bodies[i]);
                                 if (recording)
                                 {
+
                                     currentExerciseRecording.ExerciseFrames.Add(new ExerciseFrame
                                     {
                                         Body = _bodies[i]
@@ -98,7 +116,7 @@ namespace Controllers
                     {
                         if (!_bodies[i].IsTracked && bodyDrawer.Tracked)
                         {
-                            bodyDrawer.Untracked();
+                            //bodyDrawer.Untracked();
                         }
                     }
 
@@ -138,6 +156,11 @@ namespace Controllers
             recording = false;
             stopButton.SetActive(false);
             playButton.SetActive(true);
+
+            // Update scroll view
+            UpdateScrollView(homeRevalSession
+                    .CurrentRecording
+                    .ExerciseRecordings);
         }
 
         public void OnBtnSaveRecording()
@@ -153,7 +176,64 @@ namespace Controllers
 
         }
 
+        public void OnBtnRemoveRecording(int idx)
+        {
+            homeRevalSession
+                    .CurrentRecording
+                    .ExerciseRecordings.RemoveAt(idx-1);
+
+            UpdateScrollView(homeRevalSession
+                    .CurrentRecording
+                    .ExerciseRecordings);
+        }
+
+        public void OnBtnReplayRecording(int idx)
+        {
+            Debug.Log("test2: " + idx);
+        }
+
+        private void UpdateScrollView(List<ExerciseRecording> exerciseRecordings)
+        {
+            foreach (Transform child in scrollViewContent.transform)
+            {
+                GameObject.Destroy(child.gameObject);
+            }
+
+            for (int i = 1; i<exerciseRecordings.Count+1; i++)
+            {
+                // Get prefab and create recording
+                GameObject rec = (GameObject)Instantiate(Resources.Load("Prefabs/Recording"));
+
+                // Get and set text
+                GameObject gName = rec.transform.Find("Name").gameObject;
+                TMP_Text name = gName.GetComponent<TMP_Text>();
+                name.text = "OPNAME: " + i;
+
+                // Set position of recording
+                RectTransform rectTransform = rec.GetComponent<RectTransform>();
+                rectTransform.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left, 0, (i*500)-200);
+                rectTransform.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Top, 0, 170);
+
+                // Set button events
+                GameObject replay = rec.transform.Find("ReplayButton").gameObject;
+                int repIdx = i;
+                replay.GetComponent<Button>().onClick.AddListener(() => OnBtnReplayRecording(repIdx));
+
+                GameObject delete = rec.transform.Find("RemoveButton").gameObject;
+                int remIdx = i;
+                delete.GetComponent<Button>().onClick.AddListener(() => OnBtnRemoveRecording(remIdx));
 
 
+                // Add to content window
+                rec.transform.SetParent(scrollViewContent.transform, false);
+            }
+
+            if (exerciseRecordings.Count>=5) {
+                // Set width of content
+                RectTransform rt = scrollViewContent.GetComponent<RectTransform>();
+                rt.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left, 0, exerciseRecordings.Count * 251);
+            }
+
+        }
     }
 }

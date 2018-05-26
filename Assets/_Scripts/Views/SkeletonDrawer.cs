@@ -92,6 +92,8 @@ namespace Views
 
             skeleton.SetActive(true);
 
+            Debug.Log("Draw skeleton2!");
+
             // Head
             DrawJoint(boneHead, body.Joints[JointType.Head]);
             // Neck

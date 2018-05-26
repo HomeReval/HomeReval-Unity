@@ -15,7 +15,7 @@ public class KinectStatus : MonoBehaviour {
         KinectSensor _sensor = KinectSensor.GetDefault();
 
         isConnected = _sensor.IsAvailable;
-        _sensor.IsAvailableChanged += 
+        //_sensor.IsAvailableChanged += 
     }
 
     void Changed(EventArgs args)
