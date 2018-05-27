@@ -34,6 +34,14 @@ namespace Controllers
         // BodyDrawer
         private IBodyDrawer bodyDrawer;
 
+        // Replay
+        private bool replay = false;
+        private int current;
+        private int end;
+        private ExerciseRecording replayRecording;
+        private System.Diagnostics.Stopwatch timer;
+
+
         // Local session
         private bool recording = false;
         private ExerciseRecording currentExerciseRecording;
@@ -78,50 +86,71 @@ namespace Controllers
         {
             if (_reader != null)
             {
-                var frame = _reader.AcquireLatestFrame();
-
-                if (frame != null)
+                if (!replay)
                 {
-                    IList<Body> _bodies = new Body[frame.BodyFrameSource.BodyCount];
+                    var frame = _reader.AcquireLatestFrame();
 
-                    frame.GetAndRefreshBodyData(_bodies);
-
-                    // Display only first active body
-                    for (int i = 0; i < frame.BodyFrameSource.BodyCount; i++)
+                    if (frame != null)
                     {
-                        if (_bodies[i] != null)
+                        IList<Body> _bodies = new Body[frame.BodyFrameSource.BodyCount];
+
+                        frame.GetAndRefreshBodyData(_bodies);
+
+                        // Display only first active body
+                        for (int i = 0; i < frame.BodyFrameSource.BodyCount; i++)
                         {
-                            if (_bodies[i].IsTracked)
+                            if (_bodies[i] != null)
                             {
-                                Debug.Log("tracked : " + i);
-                                //skeletonDrawers[i].DrawSkeleton(_bodies[i]);
-                                bodyDrawer.DrawSkeleton(_bodies[i]);
-                                if (recording)
+                                if (_bodies[i].IsTracked)
                                 {
-
-                                    currentExerciseRecording.ExerciseFrames.Add(new ExerciseFrame
+                                    Debug.Log("tracked : " + i);
+                                    //skeletonDrawers[i].DrawSkeleton(_bodies[i]);
+                                    bodyDrawer.DrawSkeleton(_bodies[i]);
+                                    if (recording)
                                     {
-                                        Body = _bodies[i]
-                                    });
-                                }
 
-                                // Exit after first tracked body is found
-                                break;
+                                        currentExerciseRecording.ExerciseFrames.Add(new ExerciseFrame
+                                        {
+                                            Body = _bodies[i]
+                                        });
+                                    }
+
+                                    // Exit after first tracked body is found
+                                    break;
+                                }
                             }
                         }
-                    }
 
-                    // Disable untracked body
-                    for (int i = 0; i < frame.BodyFrameSource.BodyCount; i++)
-                    {
-                        if (!_bodies[i].IsTracked && bodyDrawer.Tracked)
+                        // Disable untracked body
+                        for (int i = 0; i < frame.BodyFrameSource.BodyCount; i++)
                         {
-                            //bodyDrawer.Untracked();
+                            if (!_bodies[i].IsTracked && bodyDrawer.Tracked)
+                            {
+                                //bodyDrawer.Untracked();
+                            }
                         }
+
+                        // Clear frame to get a new one
+                        frame.Dispose();
+                    }
+                }
+                else
+                {
+                    bodyDrawer.DrawSkeleton(replayRecording.ExerciseFrames[current].Body);
+                    if (timer.ElapsedMilliseconds > 33)
+                    {
+                        current++;
+                        timer.Reset();
+                        timer.Start();
                     }
 
-                    // Clear frame to get a new one
-                    frame.Dispose();
+                    if (current == replayRecording.ExerciseFrames.Count)
+                    {
+                        replay = false;
+                        replayRecording = null;
+                        timer.Stop();
+                        timer = null;
+                    }
                 }
             }
 
@@ -178,10 +207,12 @@ namespace Controllers
 
         public void OnBtnRemoveRecording(int idx)
         {
+            // Remove recording from array
             homeRevalSession
                     .CurrentRecording
                     .ExerciseRecordings.RemoveAt(idx-1);
 
+            // Update scroll view with new array
             UpdateScrollView(homeRevalSession
                     .CurrentRecording
                     .ExerciseRecordings);
@@ -189,7 +220,13 @@ namespace Controllers
 
         public void OnBtnReplayRecording(int idx)
         {
-            Debug.Log("test2: " + idx);
+            replay = true;
+            current = 0;
+            timer = new System.Diagnostics.Stopwatch();
+            timer.Start();
+            replayRecording = homeRevalSession
+                    .CurrentRecording
+                    .ExerciseRecordings[idx-1];
         }
 
         private void UpdateScrollView(List<ExerciseRecording> exerciseRecordings)
