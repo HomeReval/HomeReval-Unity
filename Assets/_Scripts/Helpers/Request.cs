@@ -64,11 +64,11 @@ namespace Helpers
 
             if (uwr.isNetworkError)
             {
-                Debug.Log("Error While Sending: " + uwr.error);
+                Debug.Log(uwr.error);
             }
             else
             {
-                Debug.Log("Received: " + uwr.downloadHandler.text);
+                Debug.Log(uwr.downloadHandler.text);
             }
         }
 
@@ -89,11 +89,11 @@ namespace Helpers
 
             if (uwr.isNetworkError)
             {
-                error("Error While Sending: " + uwr.error);
+                error(uwr.error);
             }
             else
             {
-                success("Received: " + uwr.downloadHandler.text);
+                success(uwr.downloadHandler.text);
             }
 
         }

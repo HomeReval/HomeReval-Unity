@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using TMPro;
 using Helpers;
+using Newtonsoft.Json.Linq;
 
 public class LoginScreen : MonoBehaviour {
 
@@ -8,8 +9,8 @@ public class LoginScreen : MonoBehaviour {
 
     public TMP_Text messageText;
 
-    string username = "";
-    string password = "";
+    string username = "nickwindt@hotmail.nl";
+    string password = "password";
 
     public static bool loggedIn = false;
 
@@ -38,15 +39,28 @@ public class LoginScreen : MonoBehaviour {
 
 
         //windowmanagement
-        mm.HideLogin();
-        mm.ShowMainMenu();
+        //mm.HideLogin();
+        //mm.ShowMainMenu();
 
-        /*Debug.Log("{ \"username\" : \""+username+ "\", \"password\" : \"" + password + "\" }");
+        Debug.Log("{ \"username\" : \""+username+ "\", \"password\" : \"" + password + "\" }");
 
         //APICALL
         StartCoroutine(request.Post("/user/login","{ \"username\" : \"" + username + "\", \"password\" : \"" + password + "\" }", 
-            success => Debug.Log("SUCCESS" + success), 
-            error => Debug.Log("ERROR" + error))); */       
+            success => {
+                Debug.Log(success);
+                JObject response = JObject.Parse(success);
+                HomeRevalSession hrs = HomeRevalSession.Instance;
+                hrs.Token = response.GetValue("accessToken").ToString();
+                hrs.RefreshToken = response.GetValue("refreshToken").ToString();
+
+                // Go to menu
+                mm.HideLogin();
+                mm.ShowMainMenu();
+            }, 
+            error => {
+                Debug.Log(error);
+            }
+         ));      
     }
 
 }

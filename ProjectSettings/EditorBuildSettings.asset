@@ -11,6 +11,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/__Scenes/KinectRecording.unity
     guid: 3b1b5e382bc5b344f817de95223c6f7d
-  - enabled: 1
-    path: Assets/__Scenes/KinectView.unity
-    guid: ea3d6af41125fe24db4e8aa8aed67534
+  - enabled: 0
+    path: 
+    guid: 00000000000000000000000000000000
