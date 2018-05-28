@@ -199,8 +199,6 @@ namespace Controllers
 
             string json = "{\"name\": \"" + homeRevalSession.CurrentRecording.Name + "\", \"description\": \"" + homeRevalSession.CurrentRecording.Description + "\", \"" + homeRevalSession.CurrentRecording.Amount + "\" \"exerciseRecordings\": \"" + exerciseRecording + "\"}";
 
-            System.IO.File.WriteAllText(@"C:\Users\Stefan\Documents\School\ProjectB\exercise.json", json);
-            Debug.Log(json);
             //request.Post("homereval.ga:5000/exercise", json);
 
         }
