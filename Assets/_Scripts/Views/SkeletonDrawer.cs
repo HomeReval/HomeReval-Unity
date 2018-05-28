@@ -6,7 +6,7 @@ using Windows.Kinect;
 
 namespace Views
 {
-    public class SkeletonDrawer: IBodyDrawer
+    public class BodyDrawer: IBodyDrawer
     {
 
         private GameObject skeleton;
@@ -45,7 +45,7 @@ namespace Views
         private GameObject boneAnkleRight;
         private GameObject boneFootRight;
 
-        public SkeletonDrawer(GameObject skeleton)
+        public BodyDrawer(GameObject skeleton)
         {
             this.skeleton = skeleton;
 
@@ -91,8 +91,6 @@ namespace Views
             if (body == null) return;
 
             skeleton.SetActive(true);
-
-            Debug.Log("Draw skeleton2!");
 
             // Head
             DrawJoint(boneHead, body.Joints[JointType.Head]);

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
 using UnityEngine;
 
 using Windows.Kinect;
@@ -10,12 +10,22 @@ using Views;
 using Helpers;
 using TMPro;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 namespace Controllers
 {
 
     public class RecordController : MonoBehaviour
     {
+        //textObject
+        public TMP_Text leftHandStateText;
+        public TMP_Text rightHandStateText;
+        public TMP_Text TimerText;
+
+        //Handstates
+        bool leftHandClosed = false;
+        bool rightHandClosed = false;
+
         // GameObjects
         public GameObject playButton;
         public GameObject stopButton;
@@ -63,7 +73,7 @@ namespace Controllers
 
             // Create bodyDrawer and body from prefab
             GameObject body = (GameObject)Instantiate(Resources.Load("Prefabs/Body"));
-            bodyDrawer = new SkeletonDrawer(body);
+            bodyDrawer = new BodyDrawer(body);
 
             // Get singleton session instance
             homeRevalSession = HomeRevalSession.Instance;
@@ -103,12 +113,33 @@ namespace Controllers
                             {
                                 if (_bodies[i].IsTracked)
                                 {
-                                    Debug.Log("tracked : " + i);
+                                    if (_bodies[i].HandLeftState == HandState.Closed)
+                                    {
+                                        leftHandClosed = true;
+                                        leftHandStateText.text = "Closed";
+                                    }
+                                    else if (_bodies[i].HandLeftState == HandState.Open)
+                                    {
+                                        leftHandClosed = false;
+                                        leftHandStateText.text = "Open";
+                                    }
+                                    if (_bodies[i].HandRightState == HandState.Closed)
+                                    {
+                                        rightHandClosed = true;
+                                        rightHandStateText.text = "Closed";
+                                    }
+                                    else if (_bodies[i].HandRightState == HandState.Open)
+                                    {
+                                        rightHandClosed = false;
+                                        rightHandStateText.text = "Open";
+                                    }
+                                    StartCoroutine(HandGesture());
+
+                                    //Debug.Log("tracked : " + i);
                                     //skeletonDrawers[i].DrawSkeleton(_bodies[i]);
                                     bodyDrawer.DrawSkeleton(_bodies[i]);
                                     if (recording)
                                     {
-
                                         currentExerciseRecording.ExerciseFrames.Add(new ExerciseFrame
                                         {
                                             Body = _bodies[i]
@@ -161,7 +192,7 @@ namespace Controllers
         {
             // Create new recording
             currentExerciseRecording = new ExerciseRecording();
-
+            Debug.Log("started recording button");
             recording = true;
             stopButton.SetActive(true);
             playButton.SetActive(false);
@@ -169,6 +200,7 @@ namespace Controllers
 
         public void OnBtnStopRecording()
         {
+            Debug.Log("stopped recording button");
             if (currentExerciseRecording != null)
             {
 
@@ -208,7 +240,7 @@ namespace Controllers
             // Remove recording from array
             homeRevalSession
                     .CurrentRecording
-                    .ExerciseRecordings.RemoveAt(idx-1);
+                    .ExerciseRecordings.RemoveAt(idx - 1);
 
             // Update scroll view with new array
             UpdateScrollView(homeRevalSession
@@ -224,7 +256,7 @@ namespace Controllers
             timer.Start();
             replayRecording = homeRevalSession
                     .CurrentRecording
-                    .ExerciseRecordings[idx-1];
+                    .ExerciseRecordings[idx - 1];
         }
 
         private void UpdateScrollView(List<ExerciseRecording> exerciseRecordings)
@@ -234,7 +266,7 @@ namespace Controllers
                 GameObject.Destroy(child.gameObject);
             }
 
-            for (int i = 1; i<exerciseRecordings.Count+1; i++)
+            for (int i = 1; i < exerciseRecordings.Count + 1; i++)
             {
                 // Get prefab and create recording
                 GameObject rec = (GameObject)Instantiate(Resources.Load("Prefabs/Recording"));
@@ -246,7 +278,7 @@ namespace Controllers
 
                 // Set position of recording
                 RectTransform rectTransform = rec.GetComponent<RectTransform>();
-                rectTransform.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left, 0, (i*500)-200);
+                rectTransform.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left, 0, (i * 500) - 200);
                 rectTransform.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Top, 0, 170);
 
                 // Set button events
@@ -263,10 +295,47 @@ namespace Controllers
                 rec.transform.SetParent(scrollViewContent.transform, false);
             }
 
-            if (exerciseRecordings.Count>=5) {
+            if (exerciseRecordings.Count >= 5)
+            {
                 // Set width of content
                 RectTransform rt = scrollViewContent.GetComponent<RectTransform>();
                 rt.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left, 0, exerciseRecordings.Count * 251);
+            }
+
+        }
+
+        IEnumerator HandGesture()
+        {
+            for (float interval = 3; interval < 0; interval -= 0.5f)
+            {
+                yield return new WaitForSeconds(0.5f);
+                
+                if (leftHandClosed && rightHandClosed)
+                {
+                    TimerText.text = interval.ToString() + "s";
+                    if (interval >= 2.9f)
+                    {
+                        if (!recording)
+                        {
+                            TimerText.text = "Recording";
+                            OnBtnStartRecording();
+                            yield return new WaitForSeconds(5.0f);
+
+                        }
+                        else if (recording)
+                        {
+                            TimerText.text = "Stopped";
+                            OnBtnStopRecording();
+                            yield return new WaitForSeconds(5.0f);
+                        }
+                        interval = 3f;
+                    }
+                }
+                else if (!leftHandClosed || !rightHandClosed)
+                {
+                    interval = 3f;
+                    TimerText.text = "";
+                }
             }
 
         }
