@@ -4,7 +4,7 @@ using System.Collections;
 using Windows.Kinect;
 using System;
 
-namespace HomeReval.Daos
+namespace HomeReval.Domain
 {
     [System.Serializable]
     public class ExerciseFrame

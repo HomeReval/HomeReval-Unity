@@ -1,45 +1,23 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace Helpers
+namespace HomeReval.Services
 {
-    class Request
+    class RequestService: IRequestService
     {
-        public delegate void PostCompleted(string response);
-        public delegate void PostError(string response);
-        //public delegate void GetCompleted(string response);
-        //public delegate void GetError(string response);
-
-
-        private List<PostCompleted> postCompletedHandlers = new List<PostCompleted>();
-        private List<PostError> postErrorHandlers = new List<PostError>();
-        //private List<GetCompleted> getCompletedHandlers = new List<GetCompleted>();
-        //private List<GetError> getErrorHandlers = new List<PostCompleted>();
-
         private HomeRevalSession homeRevalSession;
         private const string API = "http://homereval.ga:5000/api";
   
-        public Request()
+        public RequestService()
         {            
             homeRevalSession = HomeRevalSession.Instance;
         }
 
-        public void AddPostCompletedHandler(PostCompleted p)
+        public IEnumerator Get(string path, string json, Action<string> success, Action<string> error)
         {
-            postCompletedHandlers.Add(p);
-        }
-
-        public void AddPostErrorHandler(PostError p)
-        {
-            postErrorHandlers.Add(p);
-        }
-
-        public IEnumerator Get(string path, string json)
-        {
-            return getRequest(path, json);
+            return getRequest(path, json, success, error);
         }
 
         public IEnumerator Post(string path, string json, Action<string> success, Action<string> error)
@@ -47,7 +25,7 @@ namespace Helpers
             return postRequest(path, json, success, error);
         }
 
-        private IEnumerator getRequest(string path, string json)
+        private IEnumerator getRequest(string path, string json, Action<string> success, Action<string> error)
         {
             var uwr = new UnityWebRequest(API + path, "GET");
             byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
@@ -64,11 +42,11 @@ namespace Helpers
 
             if (uwr.isNetworkError)
             {
-                Debug.Log("Error While Sending: " + uwr.error);
+                error(uwr.error);
             }
             else
             {
-                Debug.Log("Received: " + uwr.downloadHandler.text);
+                success(uwr.downloadHandler.text);
             }
         }
 
@@ -89,11 +67,11 @@ namespace Helpers
 
             if (uwr.isNetworkError)
             {
-                error("Error While Sending: " + uwr.error);
+                error(uwr.error);
             }
             else
             {
-                success("Received: " + uwr.downloadHandler.text);
+                success(uwr.downloadHandler.text);
             }
 
         }

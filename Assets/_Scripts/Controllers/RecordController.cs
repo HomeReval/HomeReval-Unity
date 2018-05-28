@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-
 using Windows.Kinect;
 using Newtonsoft.Json;
 using System;
-using HomeReval.Daos;
-
 using Views;
-using Helpers;
 using TMPro;
 using UnityEngine.UI;
+
+using HomeReval.Helpers;
+using HomeReval.Domain;
+using HomeReval.Services;
 
 namespace Controllers
 {
@@ -29,7 +29,7 @@ namespace Controllers
         private HomeRevalSession homeRevalSession;
 
         // Http requests
-        private Request request = new Request();
+        private IRequestService requestService = new RequestService();
 
         // BodyDrawer
         private IBodyDrawer bodyDrawer;
@@ -201,7 +201,7 @@ namespace Controllers
 
             System.IO.File.WriteAllText(@"C:\Users\Stefan\Documents\School\ProjectB\exercise.json", json);
             Debug.Log(json);
-            //request.Post("homereval.ga:5000/exercise", json);
+            //requestService.Post("homereval.ga:5000/exercise", json);
 
         }
 
