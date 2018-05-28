@@ -1,9 +1,5 @@
-﻿using HomeReval.Daos;
-using System.Collections;
+﻿using HomeReval.Domain;
 using System.Collections.Generic;
-using UnityEngine;
-
-using Windows.Kinect;
 
 public sealed class HomeRevalSession
 {

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using TMPro;
-using Helpers;
+using Newtonsoft.Json.Linq;
+using HomeReval.Services;
 
 public class LoginScreen : MonoBehaviour {
 
@@ -8,18 +9,12 @@ public class LoginScreen : MonoBehaviour {
 
     public TMP_Text messageText;
 
-    string username = "";
-    string password = "";
+    string username = "nickwindt@hotmail.nl";
+    string password = "password";
 
     public static bool loggedIn = false;
 
-    private Request request = new Request();
-
-    void Awake()
-    {
-        request.AddPostCompletedHandler(response => Debug.Log(response));
-        request.AddPostErrorHandler(response => Debug.Log(response));
-    }
+    private IRequestService requestService = new RequestService();
 
     public void UserTextChanged(string input)
     {
@@ -38,15 +33,28 @@ public class LoginScreen : MonoBehaviour {
 
 
         //windowmanagement
-        mm.HideLogin();
-        mm.ShowMainMenu();
+        //mm.HideLogin();
+        //mm.ShowMainMenu();
 
-        /*Debug.Log("{ \"username\" : \""+username+ "\", \"password\" : \"" + password + "\" }");
+        Debug.Log("{ \"username\" : \""+username+ "\", \"password\" : \"" + password + "\" }");
 
         //APICALL
-        StartCoroutine(request.Post("/user/login","{ \"username\" : \"" + username + "\", \"password\" : \"" + password + "\" }", 
-            success => Debug.Log("SUCCESS" + success), 
-            error => Debug.Log("ERROR" + error))); */       
+        StartCoroutine(requestService.Post("/user/login","{ \"username\" : \"" + username + "\", \"password\" : \"" + password + "\" }", 
+            success => {
+                Debug.Log(success);
+                JObject response = JObject.Parse(success);
+                HomeRevalSession hrs = HomeRevalSession.Instance;
+                hrs.Token = response.GetValue("accessToken").ToString();
+                hrs.RefreshToken = response.GetValue("refreshToken").ToString();
+
+                // Go to menu
+                mm.HideLogin();
+                mm.ShowMainMenu();
+            }, 
+            error => {
+                Debug.Log(error);
+            }
+         ));      
     }
 
 }

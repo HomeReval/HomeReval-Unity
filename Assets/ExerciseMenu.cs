@@ -1,9 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using TMPro;
-using HomeReval.Daos;
 using System;
+using HomeReval.Domain;
 
 public class ExerciseMenu : MonoBehaviour {
 
