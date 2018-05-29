@@ -38,8 +38,9 @@ namespace Controllers
         // Session singleton
         private HomeRevalSession homeRevalSession;
 
-        // Http requests
+        // Services
         private IRequestService requestService = new RequestService();
+        private IExerciseService exerciseService = new ExerciseService();
 
         // BodyDrawer
         private IBodyDrawer bodyDrawer;
@@ -138,6 +139,8 @@ namespace Controllers
                                     //Debug.Log("tracked : " + i);
                                     //skeletonDrawers[i].DrawSkeleton(_bodies[i]);
                                     bodyDrawer.DrawSkeleton(_bodies[i]);
+                                    exerciseService.Convert(_bodies[i]);
+                                    
                                     if (recording)
                                     {
                                         currentExerciseRecording.ExerciseFrames.Add(new ExerciseFrame

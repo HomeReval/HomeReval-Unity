@@ -1,6 +1,7 @@
 ﻿using System;
 using HomeReval.Domain;
 using Windows.Kinect;
+using HomeReval.Helpers;
 
 namespace HomeReval.Services
 {
@@ -13,7 +14,17 @@ namespace HomeReval.Services
 
         public ConvertedBody Convert(Body body)
         {
-            throw new NotImplementedException();
+
+            /*foreach (var item in Map.SpineMappings)
+            {
+                JointType currentType = (JointType)item.Key;
+                JointType targetType = (JointType)item.Value;
+
+                //body.Joints[currentType].;
+                //body.Joints[targetType];
+            }*/
+
+            return new ConvertedBody(body);
         }
     }
 }
