@@ -139,14 +139,10 @@ namespace Controllers
                                     //Debug.Log("tracked : " + i);
                                     //skeletonDrawers[i].DrawSkeleton(_bodies[i]);
                                     bodyDrawer.DrawSkeleton(_bodies[i]);
-                                    exerciseService.Convert(_bodies[i]);
                                     
                                     if (recording)
                                     {
-                                        currentExerciseRecording.ExerciseFrames.Add(new ExerciseFrame
-                                        {
-                                            Body = _bodies[i]
-                                        });
+                                        currentExerciseRecording.ConvertedBodies.Add(exerciseService.Convert(_bodies[i]));
                                     }
 
                                     // Exit after first tracked body is found
@@ -170,7 +166,7 @@ namespace Controllers
                 }
                 else
                 {
-                    bodyDrawer.DrawSkeleton(replayRecording.ExerciseFrames[current].Body);
+                    /*bodyDrawer.DrawSkeleton(replayRecording.ConvertedBodies[current].Body);
                     if (timer.ElapsedMilliseconds > 33)
                     {
                         current++;
@@ -184,7 +180,7 @@ namespace Controllers
                         replayRecording = null;
                         timer.Stop();
                         timer = null;
-                    }
+                    }*/
                 }
             }
 
@@ -234,7 +230,7 @@ namespace Controllers
 
             string json = "{\"name\": \"" + homeRevalSession.CurrentRecording.Name + "\", \"description\": \"" + homeRevalSession.CurrentRecording.Description + "\", \"" + homeRevalSession.CurrentRecording.Amount + "\" \"exerciseRecordings\": \"" + exerciseRecording + "\"}";
 
-            System.IO.File.WriteAllText(@"C:\Users\Stefan\Documents\School\ProjectB\exercise.json", json);
+            System.IO.File.WriteAllText(@"E:\Documents\school\PROJECTB\Projects\exercise.json", JsonConvert.SerializeObject(homeRevalSession.CurrentRecording.ExerciseRecordings));
             Debug.Log(json);
             //requestService.Post("homereval.ga:5000/exercise", json);
 
@@ -255,7 +251,7 @@ namespace Controllers
 
         public void OnBtnReplayRecording(int idx)
         {
-            if (homeRevalSession
+            /*if (homeRevalSession
                 .CurrentRecording
                 .ExerciseRecordings[idx - 1]
                 .ExerciseFrames.Count
@@ -268,7 +264,7 @@ namespace Controllers
             timer.Start();
             replayRecording = homeRevalSession
                     .CurrentRecording
-                    .ExerciseRecordings[idx - 1];
+                    .ExerciseRecordings[idx - 1];*/
         }
 
         private void UpdateScrollView(List<ExerciseRecording> exerciseRecordings)

@@ -7,7 +7,7 @@ namespace HomeReval.Domain
 {
     public class ExerciseRecording
     {
-        private List<ExerciseFrame> exerciseFrames = new List<ExerciseFrame>();
-        public List<ExerciseFrame> ExerciseFrames { get {return exerciseFrames ;} }
+        private List<ConvertedBody> convertedBodies = new List<ConvertedBody>();
+        public List<ConvertedBody> ConvertedBodies { get {return convertedBodies; } }
     }
 }

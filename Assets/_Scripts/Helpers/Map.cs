@@ -82,7 +82,7 @@ namespace HomeReval.Helpers
 
         public static Dictionary<JointType, JointType> RightLegMappings
         {
-            get { return RightLegMappings; }
+            get { return rightLegMappings; }
         }
     }
 }
