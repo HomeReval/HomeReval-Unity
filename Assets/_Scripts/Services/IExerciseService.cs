@@ -9,7 +9,7 @@ namespace HomeReval.Services
 {
     interface IExerciseService
     {
-        int Compare(ConvertedBody bodyJSON, ConvertedBody bodyLive);
+        ExerciseScore Compare(ConvertedBody bodyJSON, ConvertedBody bodyLive);
         ConvertedBody Convert(Body body);
     }
 }

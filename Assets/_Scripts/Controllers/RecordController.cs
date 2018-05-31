@@ -52,6 +52,9 @@ namespace Controllers
         private ExerciseRecording replayRecording;
         private System.Diagnostics.Stopwatch timer;
 
+        // Temp
+        private ConvertedBody convertedBody;
+
 
         // Local session
         private bool recording = false;
@@ -91,6 +94,10 @@ namespace Controllers
 
                 };
             }
+
+            // Temp
+            string json = "{\"CheckJoints\":{\"SpineBase\":{\"JointType\":0,\"Position\":{\"X\":0.1268492,\"Y\":0.0003032145,\"Z\":1.55446684},\"TrackingState\":2},\"SpineMid\":{\"JointType\":1,\"Position\":{\"X\":0.143317968,\"Y\":0.342211,\"Z\":1.580918},\"TrackingState\":2},\"Neck\":{\"JointType\":2,\"Position\":{\"X\":0.157608911,\"Y\":0.6636707,\"Z\":1.59252632},\"TrackingState\":2},\"Head\":{\"JointType\":3,\"Position\":{\"X\":0.144495845,\"Y\":0.795747161,\"Z\":1.58098686},\"TrackingState\":2},\"ShoulderLeft\":{\"JointType\":4,\"Position\":{\"X\":-0.0597087,\"Y\":0.5340935,\"Z\":1.63624334},\"TrackingState\":2},\"ElbowLeft\":{\"JointType\":5,\"Position\":{\"X\":-0.260287374,\"Y\":0.5430984,\"Z\":1.62317121},\"TrackingState\":2},\"WristLeft\":{\"JointType\":6,\"Position\":{\"X\":-0.270222068,\"Y\":0.7277846,\"Z\":1.55055237},\"TrackingState\":2},\"HandLeft\":{\"JointType\":7,\"Position\":{\"X\":-0.261549532,\"Y\":0.787828445,\"Z\":1.53379178},\"TrackingState\":2},\"ShoulderRight\":{\"JointType\":8,\"Position\":{\"X\":0.323077142,\"Y\":0.508788049,\"Z\":1.53460455},\"TrackingState\":2},\"ElbowRight\":{\"JointType\":9,\"Position\":{\"X\":0.4001329,\"Y\":0.263967842,\"Z\":1.56393611},\"TrackingState\":2},\"WristRight\":{\"JointType\":10,\"Position\":{\"X\":0.429431617,\"Y\":0.04392934,\"Z\":1.46486247},\"TrackingState\":2},\"HandRight\":{\"JointType\":11,\"Position\":{\"X\":0.420813948,\"Y\":-0.031162167,\"Z\":1.43006539},\"TrackingState\":2},\"HipLeft\":{\"JointType\":12,\"Position\":{\"X\":0.0357785337,\"Y\":-0.0004969903,\"Z\":1.53465486},\"TrackingState\":2},\"KneeLeft\":{\"JointType\":13,\"Position\":{\"X\":0.00541542936,\"Y\":-0.30539313,\"Z\":1.50017154},\"TrackingState\":2},\"AnkleLeft\":{\"JointType\":14,\"Position\":{\"X\":-0.0135584539,\"Y\":-0.6347466,\"Z\":1.545303},\"TrackingState\":1},\"FootLeft\":{\"JointType\":15,\"Position\":{\"X\":-0.01435886,\"Y\":-0.510895669,\"Z\":1.498815},\"TrackingState\":2},\"HipRight\":{\"JointType\":16,\"Position\":{\"X\":0.211398318,\"Y\":0.00111208786,\"Z\":1.49355745},\"TrackingState\":2},\"KneeRight\":{\"JointType\":17,\"Position\":{\"X\":0.279673278,\"Y\":-0.299809128,\"Z\":1.44880223},\"TrackingState\":2},\"AnkleRight\":{\"JointType\":18,\"Position\":{\"X\":0.36529997,\"Y\":-0.613705933,\"Z\":1.51094675},\"TrackingState\":1},\"FootRight\":{\"JointType\":19,\"Position\":{\"X\":0.298645556,\"Y\":-0.5092489,\"Z\":1.45322168},\"TrackingState\":2},\"SpineShoulder\":{\"JointType\":20,\"Position\":{\"X\":0.1542677,\"Y\":0.585875869,\"Z\":1.59178972},\"TrackingState\":2},\"HandTipLeft\":{\"JointType\":21,\"Position\":{\"X\":-0.2386434,\"Y\":0.834944844,\"Z\":1.510657},\"TrackingState\":2},\"ThumbLeft\":{\"JointType\":22,\"Position\":{\"X\":-0.234568238,\"Y\":0.804093659,\"Z\":1.56182182},\"TrackingState\":2},\"HandTipRight\":{\"JointType\":23,\"Position\":{\"X\":0.412473559,\"Y\":-0.09041451,\"Z\":1.40780449},\"TrackingState\":2},\"ThumbRight\":{\"JointType\":24,\"Position\":{\"X\":0.388567567,\"Y\":-0.0415960476,\"Z\":1.39583325},\"TrackingState\":2}},\"JointResults\":{\"ShoulderLeft\":{\"CurrentJoint\":{\"JointType\":4,\"Position\":{\"X\":-0.0597087,\"Y\":0.5340935,\"Z\":1.63624334},\"TrackingState\":2},\"TargetJoint\":{\"JointType\":5,\"Position\":{\"X\":-0.260287374,\"Y\":0.5430984,\"Z\":1.62317121},\"TrackingState\":2},\"Distance\":0.2012058,\"Angle\":-177.429459},\"ElbowLeft\":{\"CurrentJoint\":{\"JointType\":5,\"Position\":{\"X\":-0.260287374,\"Y\":0.5430984,\"Z\":1.62317121},\"TrackingState\":2},\"TargetJoint\":{\"JointType\":6,\"Position\":{\"X\":-0.270222068,\"Y\":0.7277846,\"Z\":1.55055237},\"TrackingState\":2},\"Distance\":0.198698714,\"Angle\":-93.0791},\"WristLeft\":{\"CurrentJoint\":{\"JointType\":6,\"Position\":{\"X\":-0.270222068,\"Y\":0.7277846,\"Z\":1.55055237},\"TrackingState\":2},\"TargetJoint\":{\"JointType\":7,\"Position\":{\"X\":-0.261549532,\"Y\":0.787828445,\"Z\":1.53379178},\"TrackingState\":2},\"Distance\":0.06293963,\"Angle\":-81.78123},\"HandLeft\":{\"CurrentJoint\":{\"JointType\":7,\"Position\":{\"X\":-0.261549532,\"Y\":0.787828445,\"Z\":1.53379178},\"TrackingState\":2},\"TargetJoint\":{\"JointType\":6,\"Position\":{\"X\":-0.270222068,\"Y\":0.7277846,\"Z\":1.55055237},\"TrackingState\":2},\"Distance\":0.06293963,\"Angle\":98.21877}},\"Time\":1527762164042}";
+            convertedBody = JsonConvert.DeserializeObject<ConvertedBody>(json);
         }
 
         void FixedUpdate()
@@ -139,7 +146,10 @@ namespace Controllers
                                     //Debug.Log("tracked : " + i);
                                     //skeletonDrawers[i].DrawSkeleton(_bodies[i]);
                                     bodyDrawer.DrawSkeleton(_bodies[i]);
-                                    
+                                    ExerciseScore exerciseScore = exerciseService.Compare(convertedBody, exerciseService.Convert(_bodies[i]));
+
+                                    Debug.Log("Check: " + exerciseScore.Check + " Score: " + exerciseScore.Score);
+
                                     if (recording)
                                     {
                                         currentExerciseRecording.ConvertedBodies.Add(exerciseService.Convert(_bodies[i]));
@@ -230,7 +240,7 @@ namespace Controllers
 
             string json = "{\"name\": \"" + homeRevalSession.CurrentRecording.Name + "\", \"description\": \"" + homeRevalSession.CurrentRecording.Description + "\", \"" + homeRevalSession.CurrentRecording.Amount + "\" \"exerciseRecordings\": \"" + exerciseRecording + "\"}";
 
-            System.IO.File.WriteAllText(@"E:\Documents\school\PROJECTB\Projects\exercise.json", JsonConvert.SerializeObject(homeRevalSession.CurrentRecording.ExerciseRecordings));
+            System.IO.File.WriteAllText(@"C:\Users\Stefan\Documents\exercise.json", JsonConvert.SerializeObject(homeRevalSession.CurrentRecording.ExerciseRecordings));
             Debug.Log(json);
             //requestService.Post("homereval.ga:5000/exercise", json);
 
