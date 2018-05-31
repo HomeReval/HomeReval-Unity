@@ -9,9 +9,9 @@ namespace HomeReval.Domain
     {
         private List<ExerciseRecording> exerciseRecordings = new List<ExerciseRecording>();
 
-        public DateTime StartDate { get; set; }
+        /*public DateTime StartDate { get; set; }
 
-        public DateTime EndDate { get; set; }
+        public DateTime EndDate { get; set; }*/
 
         public string Name { get; set; }
 

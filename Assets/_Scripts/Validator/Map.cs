@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using Windows.Kinect;
 
-namespace HomeReval.Helpers
+namespace HomeReval.Validator
 {
     class Map
     {
@@ -17,7 +14,7 @@ namespace HomeReval.Helpers
                 { JointType.SpineShoulder, JointType.SpineMid },
                 //{ JointType.SpineMid, JointType.SpineShoulder },
                 { JointType.SpineMid, JointType.SpineBase },
-                { JointType.SpineBase, JointType.SpineMid }
+                //{ JointType.SpineBase, JointType.SpineMid }
             };
 
         private static readonly Dictionary<JointType, JointType> leftArmMappings
@@ -27,7 +24,7 @@ namespace HomeReval.Helpers
                 { JointType.ElbowLeft, JointType.WristLeft },
                 //{ JointType.WristLeft, JointType.ElbowLeft },
                 { JointType.WristLeft, JointType.HandLeft },
-                { JointType.HandLeft, JointType.WristLeft }
+                //{ JointType.HandLeft, JointType.WristLeft }
             };
 
         private static readonly Dictionary<JointType, JointType> rightArmMappings
@@ -37,7 +34,7 @@ namespace HomeReval.Helpers
                 { JointType.ElbowRight, JointType.WristRight },
                 //{ JointType.WristRight, JointType.ElbowRight },
                 { JointType.WristRight, JointType.HandRight },
-                { JointType.HandRight, JointType.WristRight }
+                //{ JointType.HandRight, JointType.WristRight }
             };
 
         private static readonly Dictionary<JointType, JointType> leftLegMappings
@@ -47,7 +44,7 @@ namespace HomeReval.Helpers
                 { JointType.KneeLeft, JointType.AnkleLeft },
                 //{ JointType.AnkleLeft, JointType.KneeLeft },
                 { JointType.AnkleLeft, JointType.FootLeft },
-                { JointType.FootLeft, JointType.AnkleLeft }
+                //{ JointType.FootLeft, JointType.AnkleLeft }
             };
 
         private static readonly Dictionary<JointType, JointType> rightLegMappings
@@ -57,7 +54,7 @@ namespace HomeReval.Helpers
                 { JointType.KneeRight, JointType.AnkleRight },
                 //{ JointType.AnkleRight, JointType.KneeRight },
                 { JointType.AnkleRight, JointType.FootRight },
-                { JointType.FootRight, JointType.AnkleRight }
+                //{ JointType.FootRight, JointType.AnkleRight }
             };
 
         public static Dictionary<JointType, JointType> SpineMappings

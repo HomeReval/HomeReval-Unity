@@ -1,7 +1,6 @@
-﻿using HomeReval.Helpers;
+﻿using HomeReval.Validator;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Windows.Kinect;
 
 namespace HomeReval.Domain
@@ -10,7 +9,7 @@ namespace HomeReval.Domain
     {
         public ConvertedBody()
         {
-
+            JointResults = new Dictionary<JointType, JointResult>();
         }
 
         public ConvertedBody(Body body){

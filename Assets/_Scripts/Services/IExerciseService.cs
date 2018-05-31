@@ -1,15 +1,13 @@
 ﻿using HomeReval.Domain;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Windows.Kinect;
 
 namespace HomeReval.Services
 {
     interface IExerciseService
     {
-        ExerciseScore Compare(ConvertedBody bodyJSON, ConvertedBody bodyLive);
+        void StartNewExercise(Exercise exercise);
+        ExerciseScore Check(ConvertedBody bodyLive);
         ConvertedBody Convert(Body body);
+        void Stop();
     }
 }

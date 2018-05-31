@@ -82,12 +82,14 @@ namespace Controllers
             // Get singleton session instance
             homeRevalSession = HomeRevalSession.Instance;
 
+
+            // Temp for creating recording
             if (homeRevalSession.CurrentRecording == null)
             {
                 homeRevalSession.CurrentRecording = new Exercise
                 {
-                    StartDate = DateTime.Today,
-                    EndDate = DateTime.Today.AddDays(20),
+                    /*StartDate = DateTime.Today,
+                    EndDate = DateTime.Today.AddDays(20),*/
                     Amount = 5,
                     Name = "test",
                     Description = "test desc"
@@ -146,9 +148,9 @@ namespace Controllers
                                     //Debug.Log("tracked : " + i);
                                     //skeletonDrawers[i].DrawSkeleton(_bodies[i]);
                                     bodyDrawer.DrawSkeleton(_bodies[i]);
-                                    ExerciseScore exerciseScore = exerciseService.Compare(convertedBody, exerciseService.Convert(_bodies[i]));
+                                    //ExerciseScore exerciseScore = exerciseService.Check(exerciseService.Convert(_bodies[i]));
 
-                                    Debug.Log("Check: " + exerciseScore.Check + " Score: " + exerciseScore.Score);
+                                    //Debug.Log("Check: " + exerciseScore.Check + " Score: " + exerciseScore.Score);
 
                                     if (recording)
                                     {
@@ -236,11 +238,13 @@ namespace Controllers
         public void OnBtnSaveRecording()
         {
             string exerciseRecording = Convert.ToBase64String(Gzip.Compress(JsonConvert.SerializeObject(homeRevalSession.CurrentRecording.ExerciseRecordings)));
+
+            
             //homeRevalSession.KinectRecording = data;
 
             string json = "{\"name\": \"" + homeRevalSession.CurrentRecording.Name + "\", \"description\": \"" + homeRevalSession.CurrentRecording.Description + "\", \"" + homeRevalSession.CurrentRecording.Amount + "\" \"exerciseRecordings\": \"" + exerciseRecording + "\"}";
 
-            System.IO.File.WriteAllText(@"C:\Users\Stefan\Documents\exercise.json", JsonConvert.SerializeObject(homeRevalSession.CurrentRecording.ExerciseRecordings));
+            System.IO.File.WriteAllText(@"C:\Users\Stefan\Documents\exercise.json", JsonConvert.SerializeObject(homeRevalSession.CurrentRecording));
             Debug.Log(json);
             //requestService.Post("homereval.ga:5000/exercise", json);
 
