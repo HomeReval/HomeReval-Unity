@@ -312,7 +312,7 @@ namespace Controllers
 
         public void UpdateReplayView(Exercise exercise)
         {
-            replaySlider.
+            replaySlider.maxValue = exercise.ExerciseFrames.Count;
         }
 
         IEnumerator HandGesture()
