@@ -35,6 +35,7 @@ namespace Controllers
         public GameObject playButton;
         public GameObject stopButton;
         public GameObject scrollViewContent;
+        public Slider replaySlider;
 
         // Kinect imports
         private KinectSensor _sensor;
@@ -211,8 +212,8 @@ namespace Controllers
                 // Save current recording
                 homeRevalSession
                     .CurrentRecording
-                    .ExerciseRecordings
-                    .Add(currentExerciseRecording);
+                    .ExerciseFrames = currentExerciseRecording.ExerciseFrames;
+
 
                 currentExerciseRecording = null;
             }
@@ -222,14 +223,16 @@ namespace Controllers
             playButton.SetActive(true);
 
             // Update scroll view
-            UpdateScrollView(homeRevalSession
+            /*UpdateScrollView(homeRevalSession
                     .CurrentRecording
-                    .ExerciseRecordings);
+                    .ExerciseRecordings);*/
+
+            UpdateReplayView(homeRevalSession.CurrentRecording);
         }
 
         public void OnBtnSaveRecording()
         {
-            string exerciseRecording = Convert.ToBase64String(Gzip.Compress(JsonConvert.SerializeObject(homeRevalSession.CurrentRecording.ExerciseRecordings)));
+            string exerciseRecording = Convert.ToBase64String(Gzip.Compress(JsonConvert.SerializeObject(homeRevalSession.CurrentRecording.ExerciseFrames)));
             //homeRevalSession.KinectRecording = data;
 
             string json = "{\"name\": \"" + homeRevalSession.CurrentRecording.Name + "\", \"description\": \"" + homeRevalSession.CurrentRecording.Description + "\", \"" + homeRevalSession.CurrentRecording.Amount + "\" \"exerciseRecordings\": \"" + exerciseRecording + "\"}";
@@ -238,7 +241,7 @@ namespace Controllers
 
         }
 
-        public void OnBtnRemoveRecording(int idx)
+        /*public void OnBtnRemoveRecording(int idx)
         {
             // Remove recording from array
             homeRevalSession
@@ -249,9 +252,9 @@ namespace Controllers
             UpdateScrollView(homeRevalSession
                     .CurrentRecording
                     .ExerciseRecordings);
-        }
+        }*/
 
-        public void OnBtnReplayRecording(int idx)
+        /*public void OnBtnReplayRecording(int idx)
         {
             replay = true;
             current = 0;
@@ -260,7 +263,7 @@ namespace Controllers
             replayRecording = homeRevalSession
                     .CurrentRecording
                     .ExerciseRecordings[idx - 1];
-        }
+        }*/
 
         private void UpdateScrollView(List<ExerciseRecording> exerciseRecordings)
         {
@@ -287,11 +290,11 @@ namespace Controllers
                 // Set button events
                 GameObject replay = rec.transform.Find("ReplayButton").gameObject;
                 int repIdx = i;
-                replay.GetComponent<Button>().onClick.AddListener(() => OnBtnReplayRecording(repIdx));
+                //replay.GetComponent<Button>().onClick.AddListener(() => OnBtnReplayRecording(repIdx));
 
                 GameObject delete = rec.transform.Find("RemoveButton").gameObject;
                 int remIdx = i;
-                delete.GetComponent<Button>().onClick.AddListener(() => OnBtnRemoveRecording(remIdx));
+                //delete.GetComponent<Button>().onClick.AddListener(() => OnBtnRemoveRecording(remIdx));
 
 
                 // Add to content window
@@ -305,6 +308,11 @@ namespace Controllers
                 rt.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left, 0, exerciseRecordings.Count * 251);
             }
 
+        }
+
+        public void UpdateReplayView(Exercise exercise)
+        {
+            replaySlider.
         }
 
         IEnumerator HandGesture()

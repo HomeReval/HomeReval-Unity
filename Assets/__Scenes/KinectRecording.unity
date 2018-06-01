@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481694, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -698,6 +698,7 @@ MonoBehaviour:
   playButton: {fileID: 1735852617}
   stopButton: {fileID: 1615783958}
   scrollViewContent: {fileID: 654377019}
+  replaySlider: {fileID: 260755800}
 --- !u!4 &245024303
 Transform:
   m_ObjectHideFlags: 0
@@ -721,7 +722,7 @@ GameObject:
   - component: {fileID: 260755799}
   - component: {fileID: 260755800}
   m_Layer: 5
-  m_Name: VolsumeSlider
+  m_Name: Slider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1955,7 +1956,7 @@ GameObject:
   - component: {fileID: 1125292454}
   - component: {fileID: 1125292453}
   m_Layer: 5
-  m_Name: Percentage
+  m_Name: Frame
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1998,7 +1999,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_text: 100%
+  m_text: 100
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d62a573c923f5cb47b8ff65261033b90, type: 2}
   m_sharedMaterial: {fileID: 2164040, guid: d62a573c923f5cb47b8ff65261033b90, type: 2}
@@ -2066,7 +2067,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 1125292453}
-    characterCount: 4
+    characterCount: 3
     spriteCount: 0
     spaceCount: 0
     wordCount: 1
