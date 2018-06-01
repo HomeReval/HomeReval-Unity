@@ -21,10 +21,15 @@ namespace Controllers
         public TMP_Text leftHandStateText;
         public TMP_Text rightHandStateText;
         public TMP_Text TimerText;
+        public TMP_Text TimerCountdownText;
+
+        //Colors
+        Color original = Color.red;
+        Color countdown = Color.cyan;
 
         //Handstates
-        bool leftHandClosed = false;
-        bool rightHandClosed = false;
+        public bool leftHandClosed = false;
+        public bool rightHandClosed = false;
 
         // GameObjects
         public GameObject playButton;
@@ -58,6 +63,9 @@ namespace Controllers
 
         void Start()
         {
+            TimerText.text = "";
+            TimerCountdownText.text = "";
+
             _sensor = KinectSensor.GetDefault();
 
             if (_sensor != null)
@@ -70,6 +78,7 @@ namespace Controllers
                     _sensor.Open();
                 }
             }
+
 
             // Create bodyDrawer and body from prefab
             GameObject body = (GameObject)Instantiate(Resources.Load("Prefabs/Body"));
@@ -90,6 +99,8 @@ namespace Controllers
 
                 };
             }
+
+            StartCoroutine(HandGesture());
         }
 
         void FixedUpdate()
@@ -118,7 +129,7 @@ namespace Controllers
                                         leftHandClosed = true;
                                         leftHandStateText.text = "Closed";
                                     }
-                                    else if (_bodies[i].HandLeftState == HandState.Open)
+                                    else //if (_bodies[i].HandLeftState == HandState.Open)
                                     {
                                         leftHandClosed = false;
                                         leftHandStateText.text = "Open";
@@ -128,12 +139,12 @@ namespace Controllers
                                         rightHandClosed = true;
                                         rightHandStateText.text = "Closed";
                                     }
-                                    else if (_bodies[i].HandRightState == HandState.Open)
+                                    else //if (_bodies[i].HandRightState == HandState.Open)
                                     {
                                         rightHandClosed = false;
                                         rightHandStateText.text = "Open";
                                     }
-                                    StartCoroutine(HandGesture());
+                                    
 
                                     //Debug.Log("tracked : " + i);
                                     //skeletonDrawers[i].DrawSkeleton(_bodies[i]);
@@ -188,15 +199,7 @@ namespace Controllers
         }
 
         // Events
-        public void OnBtnStartRecording()
-        {
-            // Create new recording
-            currentExerciseRecording = new ExerciseRecording();
-            Debug.Log("started recording button");
-            recording = true;
-            stopButton.SetActive(true);
-            playButton.SetActive(false);
-        }
+        
 
         public void OnBtnStopRecording()
         {
@@ -306,38 +309,78 @@ namespace Controllers
 
         IEnumerator HandGesture()
         {
-            for (float interval = 3; interval < 0; interval -= 0.5f)
+            float interval = 3.0f;
+            while (true)
             {
+                //lower interval
+                interval -= 0.5f;
+                //wait for 0.5 seconds
                 yield return new WaitForSeconds(0.5f);
-                
+
+                //both hands closed
                 if (leftHandClosed && rightHandClosed)
                 {
+                    //set timer text to interval
+                    TimerText.color = original;
                     TimerText.text = interval.ToString() + "s";
-                    if (interval >= 2.9f)
+                    //if the interval drops below 0.5 continue
+                    if (interval <= 0.5f)
                     {
                         if (!recording)
                         {
-                            TimerText.text = "Recording";
+                            
+                            TimerText.text = "START";
                             OnBtnStartRecording();
-                            yield return new WaitForSeconds(5.0f);
-
                         }
                         else if (recording)
                         {
                             TimerText.text = "Stopped";
                             OnBtnStopRecording();
-                            yield return new WaitForSeconds(5.0f);
                         }
-                        interval = 3f;
+                        interval = 3.0f;
                     }
+
                 }
-                else if (!leftHandClosed || !rightHandClosed)
+                else
                 {
-                    interval = 3f;
+                    interval = 3.0f;
                     TimerText.text = "";
                 }
             }
+        }
 
+        IEnumerator RecordCountdown()
+        {
+            float interval = 3.0f;
+            while (interval > 0.5f)
+            {
+                //lower interval
+                interval -= 0.5f;
+                //wait for 0.5 seconds
+                yield return new WaitForSeconds(0.5f);
+                //set timer text to interval
+                TimerCountdownText.color = countdown;
+                TimerCountdownText.text = interval.ToString() + "s";
+                //if the interval drops below 0.5 continue
+                if (interval <= 0.5f)
+                {
+                    TimerCountdownText.text = "Recording";
+                    currentExerciseRecording = new ExerciseRecording();
+                    recording = true;
+                    stopButton.SetActive(true);
+                    playButton.SetActive(false);
+                    yield return new WaitForSeconds(0.5f);
+                    TimerCountdownText.text = "";
+                }
+            }
+        }
+
+
+        public void OnBtnStartRecording()
+        {
+            // Create new recording
+            Debug.Log("started recording button");
+            StartCoroutine(RecordCountdown());
         }
     }
 }
