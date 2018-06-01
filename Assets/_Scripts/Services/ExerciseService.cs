@@ -1,6 +1,7 @@
 ﻿using System;
 using HomeReval.Domain;
 using HomeReval.Validator;
+using UnityEngine.UI;
 using Windows.Kinect;
 
 namespace HomeReval.Services
@@ -9,9 +10,9 @@ namespace HomeReval.Services
     {
         private ExerciseValidator exerciseValidator;
 
-        public void StartNewExercise(Exercise exercise)
+        public void StartNewExercise(Exercise exercise, Text text)
         {
-            exerciseValidator = new ExerciseValidator(exercise);
+            exerciseValidator = new ExerciseValidator(exercise, text);
         }
 
         public ExerciseScore Check(ConvertedBody bodyLive)

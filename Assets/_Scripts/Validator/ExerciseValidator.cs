@@ -2,6 +2,7 @@
 using HomeReval.Domain;
 using System;
 using System.Collections.Generic;
+using UnityEngine.UI;
 using Windows.Kinect;
 
 namespace HomeReval.Validator
@@ -24,7 +25,10 @@ namespace HomeReval.Validator
         private int current;
         private DateTime latestValidatedCheck;
 
-        public ExerciseValidator(Exercise exercise)
+        // Temp
+        private Text text;
+
+        public ExerciseValidator(Exercise exercise, Text text)
         {
             // Set default state
             state = ValidatorState.NotStarted;
@@ -33,29 +37,107 @@ namespace HomeReval.Validator
 
             this.exercise = exercise;
             exerciseScores = new List<ExerciseScore>();
+
+            // Temp
+            this.text = text;
         }
 
         public ExerciseScore Check(ConvertedBody bodyLive)
         {
-            if (state == ValidatorState.Done) return null;
-
             // Get body from current frame
             ConvertedBody bodyJSON = exercise.ExerciseRecordings[0].ConvertedBodies[frame];
-            ExerciseScore exerciseScore;
 
             // Check move
+            ExerciseScore exerciseScore;
             exerciseScore = Validate(bodyLive, bodyJSON);
 
-            // Wait for user to start
-            if (frame == 0 && !exerciseScore.Check)
+            text.text = "state: " + state+" frame: " +frame + " score: " + exerciseScore.Score + " current: " + current;
+
+            switch (state)
             {
-                return exerciseScore;
+                case ValidatorState.NotStarted:
+
+                    // Wait for user to start
+                    if (frame == 0 && !exerciseScore.Check)
+                    {
+                        return exerciseScore;
+                    }
+
+                    state = ValidatorState.Checking;
+
+                    return exerciseScore;
+
+                    break;
+                case ValidatorState.WaitingForNext:
+
+                    // Wait for user to start
+                    if (frame == 0 && !exerciseScore.Check)
+                    {
+                        return exerciseScore;
+                    }
+
+                    state = ValidatorState.Checking;
+
+                    return exerciseScore;
+
+                    break;
+                case ValidatorState.Checking:
+                    if (exerciseScore.Check)
+                    {
+                        // Check completed
+                        frame++;
+                        latestValidatedCheck = DateTime.Now;
+                    }
+
+                    // Find end of exercise
+                    if (frame == exercise.ExerciseRecordings[0].ConvertedBodies.Count - 1)
+                    {
+                        frame = 0;
+                        current++;
+
+                        if (current == exercise.Amount)
+                        {
+                            state = ValidatorState.Done;
+                        }
+                        else
+                        {
+                            state = ValidatorState.WaitingForNext;
+                        }
+
+                        return exerciseScore;
+                    }
+
+                    // Check if user missed checks for more then 1 second and cancel current exercise
+                    UnityEngine.Debug.Log(latestValidatedCheck < DateTime.Now.AddSeconds(-5));
+                    if (latestValidatedCheck < DateTime.Now.AddSeconds(-3))
+                    {
+                        state = ValidatorState.WaitingForNext;
+                        frame = 0;
+                        return exerciseScore;
+                    }
+
+                    UnityEngine.Debug.Log(frame);
+
+                    state = ValidatorState.Checking;
+
+                    return exerciseScore;
+
+                    break;
+                case ValidatorState.Done:
+                    return null;
+                    break;
             }
 
-            UnityEngine.Debug.Log(frame);
+            // Get body from current frame
+            //ConvertedBody bodyJSON = exercise.ExerciseRecordings[0].ConvertedBodies[frame];
+            //ExerciseScore exerciseScore;
+
+            // Check move
+            //exerciseScore = Validate(bodyLive, bodyJSON);
+
 
             // Find end of exercise
-            if (frame == exercise.ExerciseRecordings[0].ConvertedBodies.Count-1)
+            /*if (frame == exercise.ExerciseRecordings[0].ConvertedBodies.Count-1)
             {
                 frame = 0;
                 current++;
@@ -70,26 +152,22 @@ namespace HomeReval.Validator
                 }
 
                 return exerciseScore;
-            }
+            }*/
 
             // Check if user missed checks for more then 1 second and cancel current exercise
-            if ((frame != 0) && (latestValidatedCheck < DateTime.Now.AddSeconds(-1)))
+            /*if ((frame != 0) && (latestValidatedCheck < DateTime.Now.AddSeconds(-1)))
             {
                 state = ValidatorState.WaitingForNext;
                 frame = 0;
                 return exerciseScore;
-            }
+            }*/
 
-            if (exerciseScore.Check)
+            /*if (exerciseScore.Check)
             {
                 // Check completed
                 frame++;
                 latestValidatedCheck = DateTime.Now;
-            }
-
-            UnityEngine.Debug.Log(frame);
-
-            state = ValidatorState.Checking;
+            }*/
 
             return exerciseScore;
         }
@@ -107,7 +185,9 @@ namespace HomeReval.Validator
                 JointType targetType = (JointType)item.Value;
 
                 // Get angle difference between live and recorded date
-                double angleDifference = (bodyJSON.JointResults[currentType].Angle - bodyLive.JointResults[currentType].Angle);
+                double angleDifference = 180 - Math.Abs(Math.Abs(bodyJSON.JointResults[currentType].Angle - bodyLive.JointResults[currentType].Angle) - 180);
+                /*if(currentType == JointType.ShoulderLeft)
+                    text.text = "angledifference: " + angleDifference + " jsonangle: "+ bodyJSON.JointResults[currentType].Angle + " Liveangle: " + bodyLive.JointResults[currentType].Angle;*/
 
                 // Check if difference is bigger then the smallest margin
                 if (angleDifference <= (Math.Abs(margin) * -1) || angleDifference >= margin)

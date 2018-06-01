@@ -1,10 +1,10 @@
 ﻿using HomeReval.Domain;
 using HomeReval.Services;
 using Newtonsoft.Json;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.UI;
 using Views;
 using Windows.Kinect;
 
@@ -16,6 +16,7 @@ namespace Controllers
         // GameObjects
         public GameObject playButton;
         public GameObject stopButton;
+        public Text text;
 
         // Kinect imports
         private KinectSensor _sensor;
@@ -55,7 +56,7 @@ namespace Controllers
             // Set exercise for service temp
             string json = File.ReadAllText(@"C:\Users\Stefan\Documents\exercise.json");
             Exercise jsonExercise = JsonConvert.DeserializeObject<Exercise>(json);
-            exerciseService.StartNewExercise(jsonExercise);
+            exerciseService.StartNewExercise(jsonExercise, text);
         }
 
         void FixedUpdate()
@@ -81,7 +82,7 @@ namespace Controllers
                                 bodyDrawer.DrawSkeleton(_bodies[i]);
                                 ExerciseScore exerciseScore = exerciseService.Check(exerciseService.Convert(_bodies[i]));
 
-                                Debug.Log(exerciseScore.Check);
+                                //Debug.Log(exerciseScore.Check);
 
                                 // Exit after first tracked body is found
                                 break;
