@@ -54,12 +54,12 @@ public class ExerciseMenu : MonoBehaviour {
         if(startDate < endDate)
         {
             Submit(startDate, endDate, exerciseName.text, exerciseDescription.text, amnt);
-            Debug.Log("succesfully submitted");
+            //Debug.Log("succesfully submitted");
             mm.SwitchToNextScene();
         }
         else
         {
-            Debug.Log("error during submit");
+            //Debug.Log("error during submit");
         }
 
     }

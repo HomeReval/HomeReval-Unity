@@ -11,6 +11,7 @@ using Windows.Kinect;
 using HomeReval.Helpers;
 using HomeReval.Domain;
 using HomeReval.Services;
+using Newtonsoft.Json.Linq;
 
 namespace Controllers
 {
@@ -338,13 +339,27 @@ namespace Controllers
         public void OnBtnSaveRecording()
         {
             string convertedBodiesCompressed = Convert.ToBase64String(Gzip.Compress(JsonConvert.SerializeObject(homeRevalSession.CurrentRecording.ConvertedBodies)));
-            //homeRevalSession.KinectRecording = data;
 
-            string json = "{\"name\": \"" + homeRevalSession.CurrentRecording.Name + "\", \"description\": \"" + homeRevalSession.CurrentRecording.Description + "\", \"" + homeRevalSession.CurrentRecording.Amount + "\" \"exerciseRecordings\": \"" + convertedBodiesCompressed + "\"}";
+            JObject exerciseJson = new JObject(
+                new JProperty("name", homeRevalSession.CurrentRecording.Name),
+                new JProperty("description", homeRevalSession.CurrentRecording.Description),
+                new JProperty("recording", convertedBodiesCompressed));
 
-            System.IO.File.WriteAllText(@"C:\Users\Stefan\Documents\exercise.json", JsonConvert.SerializeObject(homeRevalSession.CurrentRecording));
-            Debug.Log(json);
-            //requestService.Post("homereval.ga:5000/exercise", json);
+
+            /*string exercisePlanning = "{\"startDate\":\""+ homeRevalSession.CurrentRecording.StartDate.ToLongDateString() + "\", " +
+                "\"endDate\":\"" + homeRevalSession.CurrentRecording.EndDate.ToLongDateString() + "\"" +
+                "\"description\":\"Geen idee hebben we nog niet.\"" +
+                "\"amount\":" + homeRevalSession.CurrentRecording.Amount + "}";*/
+
+            Debug.Log("request begint nu!");
+            StartCoroutine(requestService.Post("/exercise", exerciseJson.ToString(), success => {
+                Debug.Log(success);
+                //JObject response = JObject.Parse(success);
+                //Debug.Log(response.ToString());
+            },
+            error => {
+                Debug.Log(error);
+            }));
 
         }
 

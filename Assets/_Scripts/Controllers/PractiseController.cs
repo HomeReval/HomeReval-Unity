@@ -23,6 +23,7 @@ namespace Controllers
         private BodyFrameReader _reader;
 
         // Get services
+        private IRequestService requestService = new RequestService();
         private IExerciseService exerciseService = new ExerciseService();
 
         // Session singleton
@@ -53,10 +54,24 @@ namespace Controllers
             // Get singleton session instance
             homeRevalSession = HomeRevalSession.Instance;
 
+            homeRevalSession.Token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjQsImlzcyI6IkhvbWVSZXZhbCBBUEkiLCJpYXQiOjE1Mjc5NzY0NDIsImV4cCI6MTUyNzk3NzM0Mn0.DiQBSQnSJl5OrGhk4bsyaFtK0QfKRnyWqx-UHzIcJyY";
+
+            StartCoroutine(requestService.Get("/exercise/4", 
+                success =>
+                {
+                    Debug.Log(success);
+                },
+                error =>
+                {
+                    Debug.Log(error);
+                }
+            ));
+
+
             // Set exercise for service temp
-            string json = File.ReadAllText(@"C:\Users\Stefan\Documents\exercise.json");
-            Exercise jsonExercise = JsonConvert.DeserializeObject<Exercise>(json);
-            exerciseService.StartNewExercise(jsonExercise, text);
+            //string json = File.ReadAllText(@"C:\Users\Stefan\Documents\exercise.json");
+            //Exercise jsonExercise = JsonConvert.DeserializeObject<Exercise>(json);
+            //exerciseService.StartNewExercise(jsonExercise, text);
         }
 
         void FixedUpdate()
@@ -79,8 +94,8 @@ namespace Controllers
                             if (_bodies[i].IsTracked)
                             {
 
-                                bodyDrawer.DrawSkeleton(_bodies[i].Joints);
-                                ExerciseScore exerciseScore = exerciseService.Check(exerciseService.Convert(_bodies[i]));
+                                //bodyDrawer.DrawSkeleton(_bodies[i].Joints);
+                                //ExerciseScore exerciseScore = exerciseService.Check(exerciseService.Convert(_bodies[i]));
 
                                 //Debug.Log(exerciseScore.Check);
 
