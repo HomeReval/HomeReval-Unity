@@ -1,8 +1,5 @@
 using System;
-﻿using Helpers;
-using HomeReval.Daos;
 using Newtonsoft.Json;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -352,8 +349,8 @@ namespace Controllers
             this.frame = (int)frame;
 
             frameText.text = "frame " + (frame + 1).ToString() + "/" + (homeRevalSession.CurrentRecording.ExerciseFrames.Count);
-            replaySlider.value = frame;
             replaySlider.maxValue = homeRevalSession.CurrentRecording.ExerciseFrames.Count;
+            replaySlider.value = frame;
         }
 
         public void OnBtnPlayReplay()
@@ -388,7 +385,9 @@ namespace Controllers
 
             // Update view
             frameText.text = "frame " + (frame + 1).ToString() + "/" + (homeRevalSession.CurrentRecording.ExerciseFrames.Count);
-            
+            replaySlider.maxValue = homeRevalSession.CurrentRecording.ExerciseFrames.Count;
+            replaySlider.value = frame;
+
         }
 
         public void OnBtnStopReplay()
@@ -406,6 +405,7 @@ namespace Controllers
         // View
         private void ReplayView()
         {
+            startRecordingButton.SetActive(false);
             pauseReplayButton.SetActive(true);
             playReplayButton.SetActive(false);
             stopReplayButton.SetActive(true);
@@ -414,6 +414,7 @@ namespace Controllers
         }
 
         private void RecordView() {
+            startRecordingButton.SetActive(true);
             pauseReplayButton.SetActive(false);
             playReplayButton.SetActive(true);
             stopReplayButton.SetActive(false);
