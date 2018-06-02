@@ -1,12 +1,15 @@
-﻿using System.Collections;
-using UnityEngine;
-using Windows.Kinect;
+using System;
+﻿using Helpers;
+using HomeReval.Daos;
 using Newtonsoft.Json;
 using System;
-using Views;
-using TMPro;
-using UnityEngine.UI;
+using System.Collections;
 using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+using Views;
+using Windows.Kinect;
 
 using HomeReval.Helpers;
 using HomeReval.Domain;
@@ -17,19 +20,36 @@ namespace Controllers
 
     public class RecordController : MonoBehaviour
     {
+        public enum RecordState { KinectDisplaying, KinectRecording, ReplayPlaying, ReplayPaused };
+
         //textObject
         public TMP_Text leftHandStateText;
         public TMP_Text rightHandStateText;
         public TMP_Text TimerText;
+        public TMP_Text TimerCountdownText;
+
+        // Slider
+        public TMP_Text frameText;
+        public Slider frameSlider;
+
+        //Colors
+        Color original = Color.red;
+        Color countdown = Color.cyan;
 
         //Handstates
-        bool leftHandClosed = false;
-        bool rightHandClosed = false;
+        public bool leftHandClosed = false;
+        public bool rightHandClosed = false;
 
         // GameObjects
-        public GameObject playButton;
-        public GameObject stopButton;
-        public GameObject scrollViewContent;
+        public GameObject startRecordingButton;
+        public GameObject stopRecordingButton;
+        public GameObject playReplayButton;
+        public GameObject pauseReplayButton;
+        public GameObject stopReplayButton;
+        public GameObject removeButton;
+        public GameObject cutButton;
+        //public GameObject scrollViewContent;
+        public Slider replaySlider;
 
         // Kinect imports
         private KinectSensor _sensor;
@@ -46,19 +66,21 @@ namespace Controllers
         private IBodyDrawer bodyDrawer;
 
         // Replay
-        private bool replay = false;
-        private int current;
+        private int frame;
         private int end;
-        private ExerciseRecording replayRecording;
-        private System.Diagnostics.Stopwatch timer;
+        private System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
 
 
         // Local session
-        private bool recording = false;
-        private ExerciseRecording currentExerciseRecording;
+        private RecordState state = RecordState.KinectDisplaying;
+        //private bool recording = false;
+        private List<ExerciseFrame> exerciseRecordingFrames; // = new List<ExerciseFrame>();
 
         void Start()
         {
+            TimerText.text = "";
+            TimerCountdownText.text = "";
+
             _sensor = KinectSensor.GetDefault();
 
             if (_sensor != null)
@@ -71,6 +93,7 @@ namespace Controllers
                     _sensor.Open();
                 }
             }
+
 
             // Create bodyDrawer and body from prefab
             GameObject body = (GameObject)Instantiate(Resources.Load("Prefabs/Body"));
@@ -91,145 +114,228 @@ namespace Controllers
 
                 };
             }
+
+            StartCoroutine(HandGesture());
         }
 
         void FixedUpdate()
         {
             if (_reader != null)
             {
-                if (!replay)
+                switch(state)
                 {
-                    var frame = _reader.AcquireLatestFrame();
+                    case RecordState.KinectDisplaying: case RecordState.KinectRecording:
+                        var kframe = _reader.AcquireLatestFrame();
 
-                    if (frame != null)
-                    {
-                        IList<Body> _bodies = new Body[frame.BodyFrameSource.BodyCount];
-
-                        frame.GetAndRefreshBodyData(_bodies);
-
-                        // Display only first active body
-                        for (int i = 0; i < frame.BodyFrameSource.BodyCount; i++)
+                        if (kframe != null)
                         {
-                            if (_bodies[i] != null)
+                            IList<Body> _bodies = new Body[kframe.BodyFrameSource.BodyCount];
+
+                            kframe.GetAndRefreshBodyData(_bodies);
+
+                            // Display only first active body
+                            for (int i = 0; i < kframe.BodyFrameSource.BodyCount; i++)
                             {
-                                if (_bodies[i].IsTracked)
+                                if (_bodies[i] != null)
                                 {
-                                    if (_bodies[i].HandLeftState == HandState.Closed)
+                                    if (_bodies[i].IsTracked)
                                     {
-                                        leftHandClosed = true;
-                                        leftHandStateText.text = "Closed";
-                                    }
-                                    else if (_bodies[i].HandLeftState == HandState.Open)
-                                    {
-                                        leftHandClosed = false;
-                                        leftHandStateText.text = "Open";
-                                    }
-                                    if (_bodies[i].HandRightState == HandState.Closed)
-                                    {
-                                        rightHandClosed = true;
-                                        rightHandStateText.text = "Closed";
-                                    }
-                                    else if (_bodies[i].HandRightState == HandState.Open)
-                                    {
-                                        rightHandClosed = false;
-                                        rightHandStateText.text = "Open";
-                                    }
-                                    StartCoroutine(HandGesture());
-
-                                    //Debug.Log("tracked : " + i);
-                                    //skeletonDrawers[i].DrawSkeleton(_bodies[i]);
-                                    bodyDrawer.DrawSkeleton(_bodies[i]);
-                                    exerciseService.Convert(_bodies[i]);
-                                    
-                                    if (recording)
-                                    {
-                                        currentExerciseRecording.ExerciseFrames.Add(new ExerciseFrame
+                                        if (_bodies[i].HandLeftState == HandState.Closed)
                                         {
-                                            Body = _bodies[i]
-                                        });
-                                    }
+                                            leftHandClosed = true;
+                                            leftHandStateText.text = "Closed";
+                                        }
+                                        else //if (_bodies[i].HandLeftState == HandState.Open)
+                                        {
+                                            leftHandClosed = false;
+                                            leftHandStateText.text = "Open";
+                                        }
+                                        if (_bodies[i].HandRightState == HandState.Closed)
+                                        {
+                                            rightHandClosed = true;
+                                            rightHandStateText.text = "Closed";
+                                        }
+                                        else //if (_bodies[i].HandRightState == HandState.Open)
+                                        {
+                                            rightHandClosed = false;
+                                            rightHandStateText.text = "Open";
+                                        }
 
-                                    // Exit after first tracked body is found
-                                    break;
+                                        //Debug.Log("tracked : " + i);
+                                        //skeletonDrawers[i].DrawSkeleton(_bodies[i]);
+                                        bodyDrawer.DrawSkeleton(_bodies[i]);
+                                        if (state == RecordState.KinectRecording)
+                                        {
+                                            exerciseRecordingFrames.Add(new ExerciseFrame
+                                            {
+                                                Body = _bodies[i]
+                                            });
+                                        }
+
+                                        // Exit after first tracked body is found
+                                        break;
+                                    }
                                 }
                             }
-                        }
 
-                        // Disable untracked body
-                        for (int i = 0; i < frame.BodyFrameSource.BodyCount; i++)
-                        {
-                            if (!_bodies[i].IsTracked && bodyDrawer.Tracked)
+                            // Disable untracked body
+                            for (int i = 0; i < kframe.BodyFrameSource.BodyCount; i++)
                             {
-                                //bodyDrawer.Untracked();
+                                if (!_bodies[i].IsTracked && bodyDrawer.Tracked)
+                                {
+                                    //bodyDrawer.Untracked();
+                                }
                             }
+
+                            // Clear frame to get a new one
+                            kframe.Dispose();
                         }
 
-                        // Clear frame to get a new one
-                        frame.Dispose();
-                    }
-                }
-                else
-                {
-                    bodyDrawer.DrawSkeleton(replayRecording.ExerciseFrames[current].Body);
-                    if (timer.ElapsedMilliseconds > 33)
-                    {
-                        current++;
-                        timer.Reset();
-                        timer.Start();
-                    }
+                        break;
 
-                    if (current == replayRecording.ExerciseFrames.Count)
-                    {
-                        replay = false;
-                        replayRecording = null;
-                        timer.Stop();
-                        timer = null;
-                    }
+                    case RecordState.ReplayPlaying:
+
+                        bodyDrawer.DrawSkeleton(homeRevalSession.CurrentRecording.ExerciseFrames[frame].Body);
+                        if (timer.ElapsedMilliseconds > 33)
+                        {
+                            frame++;
+
+                            if (frame >= homeRevalSession.CurrentRecording.ExerciseFrames.Count - 1)
+                            {
+                                frame = 0;
+                                state = RecordState.ReplayPaused;
+
+                                // Update view
+                                pauseReplayButton.SetActive(false);
+                                playReplayButton.SetActive(true);
+                            }
+
+
+                            timer.Reset();
+                            timer.Start();
+
+                            // Update view
+                            frameText.text = "frame " + (frame + 1).ToString() + "/" + (homeRevalSession.CurrentRecording.ExerciseFrames.Count);
+                            replaySlider.value = frame;
+                        }
+
+                        break;
+
+                    case RecordState.ReplayPaused:
+                        bodyDrawer.DrawSkeleton(homeRevalSession.CurrentRecording.ExerciseFrames[frame].Body);
+                        break;
                 }
             }
-
         }
 
         // Events
+        public void UpdateReplayView(Exercise exercise)
+        {
+            replaySlider.maxValue = exercise.ExerciseFrames.Count-1;
+            frameText.text = "frame 1/" + (homeRevalSession.CurrentRecording.ExerciseFrames.Count);
+        }
+
+        IEnumerator HandGesture()
+        {
+            float interval = 3.0f;
+            while (true)
+            {
+                //lower interval
+                interval -= 0.5f;
+                //wait for 0.5 seconds
+                yield return new WaitForSeconds(0.5f);
+
+                //both hands closed
+                if (leftHandClosed && rightHandClosed)
+                {
+                    //set timer text to interval
+                    TimerText.color = original;
+                    TimerText.text = interval.ToString() + "s";
+                    //if the interval drops below 0.5 continue
+                    if (interval <= 0.5f)
+                    {
+                        if (state == RecordState.KinectDisplaying)
+                        {
+                            
+                            TimerText.text = "START";
+                            OnBtnStartRecording();
+                        }
+                        else if (state == RecordState.KinectRecording)
+                        {
+                            TimerText.text = "Stopped";
+                            OnBtnStopRecording();
+                        }
+                        interval = 3.0f;
+                    }
+
+                }
+                else
+                {
+                    interval = 3.0f;
+                    TimerText.text = "";
+                }
+            }
+        }
+
+        IEnumerator RecordCountdown()
+        {
+            float interval = 3.0f;
+            while (interval > 0.5f)
+            {
+                //lower interval
+                interval -= 0.5f;
+                //wait for 0.5 seconds
+                yield return new WaitForSeconds(0.5f);
+                //set timer text to interval
+                TimerCountdownText.color = countdown;
+                TimerCountdownText.text = interval.ToString() + "s";
+                //if the interval drops below 0.5 continue
+                if (interval <= 0.5f)
+                {
+                    TimerCountdownText.text = "Recording";
+
+                    exerciseRecordingFrames = new List<ExerciseFrame>();
+                    state = RecordState.KinectRecording;
+                    yield return new WaitForSeconds(0.5f);
+                    TimerCountdownText.text = "";
+                }
+            }
+        }
+
+
         public void OnBtnStartRecording()
         {
             // Create new recording
-            currentExerciseRecording = new ExerciseRecording();
-            Debug.Log("started recording button");
-            recording = true;
-            stopButton.SetActive(true);
-            playButton.SetActive(false);
+            stopRecordingButton.SetActive(true);
+            startRecordingButton.SetActive(false);
+
+            StartCoroutine(RecordCountdown());
         }
 
         public void OnBtnStopRecording()
         {
-            Debug.Log("stopped recording button");
-            if (currentExerciseRecording != null)
+            if (exerciseRecordingFrames.Count > 0)
             {
 
-                Debug.Log(currentExerciseRecording);
                 // Save current recording
                 homeRevalSession
                     .CurrentRecording
-                    .ExerciseRecordings
-                    .Add(currentExerciseRecording);
-
-                currentExerciseRecording = null;
+                    .ExerciseFrames = exerciseRecordingFrames;
             }
 
-            recording = false;
-            stopButton.SetActive(false);
-            playButton.SetActive(true);
+            exerciseRecordingFrames = null;
 
-            // Update scroll view
-            UpdateScrollView(homeRevalSession
-                    .CurrentRecording
-                    .ExerciseRecordings);
+            state = RecordState.KinectDisplaying;
+            RecordView();
+
+            // Update replay view
+            UpdateReplayView(homeRevalSession.CurrentRecording);
         }
 
+        // Save and send to API
         public void OnBtnSaveRecording()
         {
-            string exerciseRecording = Convert.ToBase64String(Gzip.Compress(JsonConvert.SerializeObject(homeRevalSession.CurrentRecording.ExerciseRecordings)));
+            string exerciseRecording = Convert.ToBase64String(Gzip.Compress(JsonConvert.SerializeObject(homeRevalSession.CurrentRecording.ExerciseFrames)));
             //homeRevalSession.KinectRecording = data;
 
             string json = "{\"name\": \"" + homeRevalSession.CurrentRecording.Name + "\", \"description\": \"" + homeRevalSession.CurrentRecording.Description + "\", \"" + homeRevalSession.CurrentRecording.Amount + "\" \"exerciseRecordings\": \"" + exerciseRecording + "\"}";
@@ -240,116 +346,83 @@ namespace Controllers
 
         }
 
-        public void OnBtnRemoveRecording(int idx)
+        // Replay
+        public void OnSliderUpdate(float frame)
         {
-            // Remove recording from array
-            homeRevalSession
-                    .CurrentRecording
-                    .ExerciseRecordings.RemoveAt(idx - 1);
+            this.frame = (int)frame;
 
-            // Update scroll view with new array
-            UpdateScrollView(homeRevalSession
-                    .CurrentRecording
-                    .ExerciseRecordings);
+            frameText.text = "frame " + (frame + 1).ToString() + "/" + (homeRevalSession.CurrentRecording.ExerciseFrames.Count);
+            replaySlider.value = frame;
+            replaySlider.maxValue = homeRevalSession.CurrentRecording.ExerciseFrames.Count;
         }
 
-        public void OnBtnReplayRecording(int idx)
+        public void OnBtnPlayReplay()
         {
-            if (homeRevalSession
-                .CurrentRecording
-                .ExerciseRecordings[idx - 1]
-                .ExerciseFrames.Count
-                ==
-                0) return;
+            if (homeRevalSession.CurrentRecording.ExerciseFrames == null || homeRevalSession.CurrentRecording.ExerciseFrames.Count == 0) return;
 
-            replay = true;
-            current = 0;
-            timer = new System.Diagnostics.Stopwatch();
             timer.Start();
-            replayRecording = homeRevalSession
-                    .CurrentRecording
-                    .ExerciseRecordings[idx - 1];
+
+            // Show right buttons
+            state = RecordState.ReplayPlaying;
+            ReplayView();
         }
 
-        private void UpdateScrollView(List<ExerciseRecording> exerciseRecordings)
+        public void OnBtnPauseReplay()
         {
-            foreach (Transform child in scrollViewContent.transform)
-            {
-                GameObject.Destroy(child.gameObject);
-            }
+            state = RecordState.ReplayPaused;
+            /*frame = 0;
+            timer = new System.Diagnostics.Stopwatch();
+            timer.Start();*/
 
-            for (int i = 1; i < exerciseRecordings.Count + 1; i++)
-            {
-                // Get prefab and create recording
-                GameObject rec = (GameObject)Instantiate(Resources.Load("Prefabs/Recording"));
-
-                // Get and set text
-                GameObject gName = rec.transform.Find("Name").gameObject;
-                TMP_Text name = gName.GetComponent<TMP_Text>();
-                name.text = "OPNAME: " + i;
-
-                // Set position of recording
-                RectTransform rectTransform = rec.GetComponent<RectTransform>();
-                rectTransform.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left, 0, (i * 500) - 200);
-                rectTransform.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Top, 0, 170);
-
-                // Set button events
-                GameObject replay = rec.transform.Find("ReplayButton").gameObject;
-                int repIdx = i;
-                replay.GetComponent<Button>().onClick.AddListener(() => OnBtnReplayRecording(repIdx));
-
-                GameObject delete = rec.transform.Find("RemoveButton").gameObject;
-                int remIdx = i;
-                delete.GetComponent<Button>().onClick.AddListener(() => OnBtnRemoveRecording(remIdx));
-
-
-                // Add to content window
-                rec.transform.SetParent(scrollViewContent.transform, false);
-            }
-
-            if (exerciseRecordings.Count >= 5)
-            {
-                // Set width of content
-                RectTransform rt = scrollViewContent.GetComponent<RectTransform>();
-                rt.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left, 0, exerciseRecordings.Count * 251);
-            }
-
+            pauseReplayButton.SetActive(false);
+            playReplayButton.SetActive(true);
         }
 
-        IEnumerator HandGesture()
+        public void OnBtnCutReplay()
         {
-            for (float interval = 3; interval < 0; interval -= 0.5f)
-            {
-                yield return new WaitForSeconds(0.5f);
-                
-                if (leftHandClosed && rightHandClosed)
-                {
-                    TimerText.text = interval.ToString() + "s";
-                    if (interval >= 2.9f)
-                    {
-                        if (!recording)
-                        {
-                            TimerText.text = "Recording";
-                            OnBtnStartRecording();
-                            yield return new WaitForSeconds(5.0f);
+            if ((homeRevalSession.CurrentRecording.ExerciseFrames == null || homeRevalSession.CurrentRecording.ExerciseFrames.Count == 0) ||
+                 (homeRevalSession.CurrentRecording.ExerciseFrames.Count <= frame)) return;
 
-                        }
-                        else if (recording)
-                        {
-                            TimerText.text = "Stopped";
-                            OnBtnStopRecording();
-                            yield return new WaitForSeconds(5.0f);
-                        }
-                        interval = 3f;
-                    }
-                }
-                else if (!leftHandClosed || !rightHandClosed)
-                {
-                    interval = 3f;
-                    TimerText.text = "";
-                }
-            }
+            homeRevalSession.CurrentRecording.ExerciseFrames = homeRevalSession.CurrentRecording.ExerciseFrames.GetRange(0, frame);
+            frame = 0;
 
+            // Update view
+            frameText.text = "frame " + (frame + 1).ToString() + "/" + (homeRevalSession.CurrentRecording.ExerciseFrames.Count);
+            
         }
+
+        public void OnBtnStopReplay()
+        {
+            
+
+            frame = 0;
+            timer.Reset();
+            timer.Stop();
+
+            state = RecordState.KinectDisplaying;
+            RecordView();
+        }
+
+        // View
+        private void ReplayView()
+        {
+            pauseReplayButton.SetActive(true);
+            playReplayButton.SetActive(false);
+            stopReplayButton.SetActive(true);
+            //removeButton.SetActive(true);
+            cutButton.SetActive(true);
+        }
+
+        private void RecordView() {
+            pauseReplayButton.SetActive(false);
+            playReplayButton.SetActive(true);
+            stopReplayButton.SetActive(false);
+            startRecordingButton.SetActive(true);
+            stopRecordingButton.SetActive(false);
+            //removeButton.SetActive(false);
+            cutButton.SetActive(false);
+        }
+        
+        
     }
 }
