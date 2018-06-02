@@ -79,7 +79,7 @@ namespace Controllers
                             if (_bodies[i].IsTracked)
                             {
 
-                                bodyDrawer.DrawSkeleton(_bodies[i]);
+                                bodyDrawer.DrawSkeleton(_bodies[i].Joints);
                                 ExerciseScore exerciseScore = exerciseService.Check(exerciseService.Convert(_bodies[i]));
 
                                 //Debug.Log(exerciseScore.Check);

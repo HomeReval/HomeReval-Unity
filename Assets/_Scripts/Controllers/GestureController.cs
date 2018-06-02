@@ -84,7 +84,7 @@ public class GestureController : MonoBehaviour {
                         //StartCoroutine(HandGesture());
 
                         // Exit after first tracked body is found
-                        bodyDrawer.DrawSkeleton(_bodies[i]);
+                        bodyDrawer.DrawSkeleton(_bodies[i].Joints);
                         break;
                     }
                 }

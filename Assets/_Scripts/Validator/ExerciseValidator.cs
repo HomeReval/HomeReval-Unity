@@ -45,7 +45,7 @@ namespace HomeReval.Validator
         public ExerciseScore Check(ConvertedBody bodyLive)
         {
             // Get body from current frame
-            ConvertedBody bodyJSON = exercise.ExerciseRecordings[0].ConvertedBodies[frame];
+            ConvertedBody bodyJSON = exercise.ConvertedBodies[frame];
 
             // Check move
             ExerciseScore exerciseScore;
@@ -90,7 +90,7 @@ namespace HomeReval.Validator
                     }
 
                     // Find end of exercise
-                    if (frame == exercise.ExerciseRecordings[0].ConvertedBodies.Count - 1)
+                    if (frame == exercise.ConvertedBodies.Count - 1)
                     {
                         frame = 0;
                         current++;

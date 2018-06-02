@@ -86,67 +86,65 @@ namespace Views
             boneFootRight = this.skeleton.transform.Find("FootRight").gameObject;
         }
 
-        public void DrawSkeleton(Body body)
+        public void DrawSkeleton(Dictionary<JointType, Windows.Kinect.Joint> joints)
         {
-            if (body == null) return;
-
             skeleton.SetActive(true);
 
             // Head
-            DrawJoint(boneHead, body.Joints[JointType.Head]);
+            DrawJoint(boneHead, joints[JointType.Head]);
             // Neck
-            DrawJoint(boneNeck, body.Joints[JointType.Neck]);
+            DrawJoint(boneNeck, joints[JointType.Neck]);
             //SpineShoulder
-            DrawJoint(boneSpineShoulder, body.Joints[JointType.SpineShoulder]);
+            DrawJoint(boneSpineShoulder, joints[JointType.SpineShoulder]);
             //SpineMid
-            DrawJoint(boneSpineMid, body.Joints[JointType.SpineMid]);
+            DrawJoint(boneSpineMid, joints[JointType.SpineMid]);
             //SpineBase
-            DrawJoint(boneSpineBase, body.Joints[JointType.SpineBase]);
+            DrawJoint(boneSpineBase, joints[JointType.SpineBase]);
 
             //ShoulderLeft
-            DrawJoint(boneShoulderLeft, body.Joints[JointType.ShoulderLeft]);
+            DrawJoint(boneShoulderLeft, joints[JointType.ShoulderLeft]);
             //ElbowLeft
-            DrawJoint(boneElbowLeft, body.Joints[JointType.ElbowLeft]);
+            DrawJoint(boneElbowLeft, joints[JointType.ElbowLeft]);
             //WristLeft
-            DrawJoint(boneWristLeft, body.Joints[JointType.WristLeft]);
+            DrawJoint(boneWristLeft, joints[JointType.WristLeft]);
             //HandLeft
-            DrawJoint(boneHandLeft, body.Joints[JointType.HandLeft]);
+            DrawJoint(boneHandLeft, joints[JointType.HandLeft]);
             //HandTipLeft
-            DrawJoint(boneHandTipLeft, body.Joints[JointType.HandTipLeft]);
+            DrawJoint(boneHandTipLeft, joints[JointType.HandTipLeft]);
             //ThumbLeft
-            DrawJoint(boneThumbLeft, body.Joints[JointType.ThumbLeft]);
+            DrawJoint(boneThumbLeft, joints[JointType.ThumbLeft]);
 
 
             //ShoulderRight
-            DrawJoint(boneShoulderRight, body.Joints[JointType.ShoulderRight]);
+            DrawJoint(boneShoulderRight, joints[JointType.ShoulderRight]);
             //ElbowRight
-            DrawJoint(boneElbowRight, body.Joints[JointType.ElbowRight]);
+            DrawJoint(boneElbowRight, joints[JointType.ElbowRight]);
             //WristRight
-            DrawJoint(boneWristRight, body.Joints[JointType.WristRight]);
+            DrawJoint(boneWristRight, joints[JointType.WristRight]);
             //HandRight
-            DrawJoint(boneHandRight, body.Joints[JointType.HandRight]);
+            DrawJoint(boneHandRight, joints[JointType.HandRight]);
             //HandTipRight
-            DrawJoint(boneHandTipRight, body.Joints[JointType.HandTipRight]);
+            DrawJoint(boneHandTipRight, joints[JointType.HandTipRight]);
             //ThumbRight
-            DrawJoint(boneThumbRight, body.Joints[JointType.ThumbRight]);
+            DrawJoint(boneThumbRight, joints[JointType.ThumbRight]);
 
             //HipLeft
-            DrawJoint(boneHipLeft, body.Joints[JointType.HipLeft]);
+            DrawJoint(boneHipLeft, joints[JointType.HipLeft]);
             //KneeLeft
-            DrawJoint(boneKneeLeft, body.Joints[JointType.KneeLeft]);
+            DrawJoint(boneKneeLeft, joints[JointType.KneeLeft]);
             //AnkleLeft
-            DrawJoint(boneAnkleLeft, body.Joints[JointType.AnkleLeft]);
+            DrawJoint(boneAnkleLeft, joints[JointType.AnkleLeft]);
             //FootLeft
-            DrawJoint(boneFootLeft, body.Joints[JointType.FootLeft]);
+            DrawJoint(boneFootLeft, joints[JointType.FootLeft]);
 
             //HipRight
-            DrawJoint(boneHipRight, body.Joints[JointType.HipRight]);
+            DrawJoint(boneHipRight, joints[JointType.HipRight]);
             //KneeRight
-            DrawJoint(boneKneeRight, body.Joints[JointType.KneeRight]);
+            DrawJoint(boneKneeRight, joints[JointType.KneeRight]);
             //AnkleRight
-            DrawJoint(boneAnkleRight, body.Joints[JointType.AnkleRight]);
+            DrawJoint(boneAnkleRight, joints[JointType.AnkleRight]);
             //FootRight
-            DrawJoint(boneFootRight, body.Joints[JointType.FootRight]);
+            DrawJoint(boneFootRight, joints[JointType.FootRight]);
         }
 
         public void Untracked()

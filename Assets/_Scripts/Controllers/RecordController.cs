@@ -163,7 +163,7 @@ namespace Controllers
 
                                         //Debug.Log("tracked : " + i);
                                         //skeletonDrawers[i].DrawSkeleton(_bodies[i]);
-                                        bodyDrawer.DrawSkeleton(_bodies[i]);
+                                        bodyDrawer.DrawSkeleton(_bodies[i].Joints);
                                         if (state == RecordState.KinectRecording)
                                         {
                                             exerciseConvertedBodies.Add(exerciseService.Convert(_bodies[i]));
@@ -196,12 +196,12 @@ namespace Controllers
 
                     case RecordState.ReplayPlaying:
 
-                        bodyDrawer.DrawSkeleton(homeRevalSession.CurrentRecording.ExerciseFrames[frame].Body);
+                        bodyDrawer.DrawSkeleton(homeRevalSession.CurrentRecording.ConvertedBodies[frame].CheckJoints);
                         if (timer.ElapsedMilliseconds > 33)
                         {
                             frame++;
 
-                            if (frame >= homeRevalSession.CurrentRecording.ExerciseFrames.Count - 1)
+                            if (frame >= homeRevalSession.CurrentRecording.ConvertedBodies.Count - 1)
                             {
                                 frame = 0;
                                 state = RecordState.ReplayPaused;
@@ -223,16 +223,16 @@ namespace Controllers
                         break;
 
                     case RecordState.ReplayPaused:
-                        bodyDrawer.DrawSkeleton(homeRevalSession.CurrentRecording.ConvertedBodies[frame].Body);
+                        bodyDrawer.DrawSkeleton(homeRevalSession.CurrentRecording.ConvertedBodies[frame].CheckJoints);
                         break;
                 }
             }
         }
 
         // Events
-        public void UpdateReplayView(Exercise exercise)
+        public void UpdateReplayView()
         {
-            replaySlider.maxValue = exercise.ConvertedBodies.Count-1;
+            replaySlider.maxValue = homeRevalSession.CurrentRecording.ConvertedBodies.Count-1;
             frameText.text = "frame 1/" + (homeRevalSession.CurrentRecording.ConvertedBodies.Count);
         }
 
@@ -322,15 +322,16 @@ namespace Controllers
                 homeRevalSession
                     .CurrentRecording
                     .ConvertedBodies = exerciseConvertedBodies;
+
+
+                // Update replay view
+                UpdateReplayView();
             }
 
             exerciseConvertedBodies = null;
 
             state = RecordState.KinectDisplaying;
             RecordView();
-
-            // Update replay view
-            UpdateReplayView(homeRevalSession.CurrentRecording);
         }
 
         // Save and send to API
