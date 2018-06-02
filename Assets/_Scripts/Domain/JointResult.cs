@@ -6,7 +6,7 @@ using Windows.Kinect;
 
 namespace HomeReval.Domain
 {
-    class JointResult
+    public class JointResult
     {
         public Joint CurrentJoint { get; set; }
         public Joint TargetJoint { get; set; }

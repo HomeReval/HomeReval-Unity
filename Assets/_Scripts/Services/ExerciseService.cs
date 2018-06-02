@@ -1,29 +1,32 @@
 ﻿using System;
 using HomeReval.Domain;
+using HomeReval.Validator;
+using UnityEngine.UI;
 using Windows.Kinect;
-using HomeReval.Helpers;
 
 namespace HomeReval.Services
 {
     class ExerciseService : IExerciseService
     {
-        public int Compare(ConvertedBody bodyJSON, ConvertedBody bodyLive)
+        private ExerciseValidator exerciseValidator;
+
+        public void StartNewExercise(Exercise exercise, Text text)
         {
-            throw new NotImplementedException();
+            exerciseValidator = new ExerciseValidator(exercise, text);
+        }
+
+        public ExerciseScore Check(ConvertedBody bodyLive)
+        {
+            return exerciseValidator.Check(bodyLive);
+        }
+
+        public void Stop()
+        {
+            exerciseValidator = null;
         }
 
         public ConvertedBody Convert(Body body)
         {
-
-            /*foreach (var item in Map.SpineMappings)
-            {
-                JointType currentType = (JointType)item.Key;
-                JointType targetType = (JointType)item.Value;
-
-                //body.Joints[currentType].;
-                //body.Joints[targetType];
-            }*/
-
             return new ConvertedBody(body);
         }
     }

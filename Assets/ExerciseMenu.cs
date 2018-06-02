@@ -28,8 +28,8 @@ public class ExerciseMenu : MonoBehaviour {
     {
         hrs.CurrentRecording = new Exercise
         {
-            StartDate = start,
-            EndDate = end,
+            /*StartDate = start,
+            EndDate = end,*/
             Name = name,
             Description = desc,
             Amount = amount,

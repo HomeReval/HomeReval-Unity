@@ -11,7 +11,7 @@ namespace HomeReval.Domain
     {
         public ExerciseFrame()
         {
-            Time = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+            Time = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalMilliseconds;
         }
 
         public Body Body { get; set; }

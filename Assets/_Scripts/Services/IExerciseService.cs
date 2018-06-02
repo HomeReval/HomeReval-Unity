@@ -1,15 +1,14 @@
 ﻿using HomeReval.Domain;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using UnityEngine.UI;
 using Windows.Kinect;
 
 namespace HomeReval.Services
 {
     interface IExerciseService
     {
-        int Compare(ConvertedBody bodyJSON, ConvertedBody bodyLive);
+        void StartNewExercise(Exercise exercise, Text text);
+        ExerciseScore Check(ConvertedBody bodyLive);
         ConvertedBody Convert(Body body);
+        void Stop();
     }
 }
