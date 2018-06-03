@@ -3,8 +3,10 @@ using Windows.Kinect;
 
 namespace HomeReval.Validator
 {
-    class Map
+    public class Map
     {
+        public enum Mappings { Spine, LeftArm, RightArm, LeftLeg, RightLeg }
+
         private static readonly Dictionary<JointType, JointType> spineMappings 
             = new Dictionary<JointType, JointType>{
                 { JointType.Head, JointType.Neck },
@@ -57,7 +59,21 @@ namespace HomeReval.Validator
                 //{ JointType.FootRight, JointType.AnkleRight }
             };
 
-        public static Dictionary<JointType, JointType> SpineMappings
+        private static readonly Dictionary<Mappings, Dictionary<JointType, JointType>> dictMappings = new Dictionary<Mappings, Dictionary<JointType, JointType>>
+        {
+            { Mappings.Spine, spineMappings },
+            { Mappings.LeftArm, leftArmMappings },
+            { Mappings.RightArm, rightArmMappings },
+            { Mappings.LeftLeg, leftLegMappings },
+            { Mappings.RightLeg, rightLegMappings }
+        };
+
+        public static Dictionary<Mappings, Dictionary<JointType, JointType>> DictMappings
+        {
+            get { return dictMappings; }
+        }
+
+        /*public static Dictionary<JointType, JointType> SpineMappings
         {
             get{return spineMappings;}
         }
@@ -80,6 +96,6 @@ namespace HomeReval.Validator
         public static Dictionary<JointType, JointType> RightLegMappings
         {
             get { return rightLegMappings; }
-        }
+        }*/
     }
 }

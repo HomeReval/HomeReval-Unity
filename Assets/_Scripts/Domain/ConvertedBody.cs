@@ -12,39 +12,35 @@ namespace HomeReval.Domain
             JointResults = new Dictionary<JointType, JointResult>();
         }
 
-        public ConvertedBody(Body body){
+        public ConvertedBody(Body body, List<Map.Mappings> jointMappings){
             JointResults = new Dictionary<JointType, JointResult>();
 
-            foreach (var item in Map.LeftArmMappings)
+            foreach (Map.Mappings mapping in jointMappings)
             {
-                JointType currentType = (JointType)item.Key;
-                JointType targetType = (JointType)item.Value;
+                foreach (var item in Map.DictMappings[mapping])
+                {
+                    JointType currentType = item.Key;
+                    JointType targetType = item.Value;
 
-                Joint currentJoint = body.Joints[currentType];
-                Joint targetJoint = body.Joints[targetType];
+                    Joint currentJoint = body.Joints[currentType];
+                    Joint targetJoint = body.Joints[targetType];
 
-                // Calculate distance between 2 joints
-                float deltaX = targetJoint.Position.X - currentJoint.Position.X;
-                float deltaY = targetJoint.Position.Y - currentJoint.Position.Y;
-                float deltaZ = targetJoint.Position.Z - currentJoint.Position.Z;
-                float distance = (float)Math.Sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
+                    // Calculate distance between 2 joints
+                    float deltaX = targetJoint.Position.X - currentJoint.Position.X;
+                    float deltaY = targetJoint.Position.Y - currentJoint.Position.Y;
+                    float deltaZ = targetJoint.Position.Z - currentJoint.Position.Z;
+                    float distance = (float)Math.Sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
 
-                float angle = Angle(currentJoint.Position.X, currentJoint.Position.Y, targetJoint.Position.X, targetJoint.Position.Y);
+                    float angle = Angle(currentJoint.Position.X, currentJoint.Position.Y, targetJoint.Position.X, targetJoint.Position.Y);
 
-                /* if (currentType == JointType.ElbowLeft)
-                    UnityEngine.Debug.Log("Angle: " + angle + " Distance: " + distance);
-                /*UnityEngine.Debug.Log(
-                    "yaw: " + (Math.Atan((targetJoint.Position.X - currentJoint.Position.X) / (targetJoint.Position.Z - currentJoint.Position.Z)) * (180.0 / Math.PI))+
-                    "pitch: "+ (Math.Atan((targetJoint.Position.Z - currentJoint.Position.Z) / (targetJoint.Position.Y - currentJoint.Position.Y)) * (180.0 / Math.PI)) +
-                    "roll: "+ (Math.Atan((targetJoint.Position.Y - currentJoint.Position.Y) / (targetJoint.Position.X - currentJoint.Position.X))) *(180.0 / Math.PI));*/
-
-
-                JointResults.Add(currentType, new JointResult{
-                    CurrentJoint = currentJoint,
-                    TargetJoint = targetJoint,
-                    Distance = distance,
-                    Angle = angle
-                });
+                    JointResults.Add(currentType, new JointResult
+                    {
+                        CurrentJoint = currentJoint,
+                        TargetJoint = targetJoint,
+                        Distance = distance,
+                        Angle = angle
+                    });
+                }
             }
 
             CheckJoints = body.Joints;

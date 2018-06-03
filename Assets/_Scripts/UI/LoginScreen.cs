@@ -47,9 +47,22 @@ public class LoginScreen : MonoBehaviour {
                 hrs.Token = response.GetValue("accessToken").ToString();
                 hrs.RefreshToken = response.GetValue("refreshToken").ToString();
 
-                // Go to menu
-                mm.HideLogin();
-                mm.ShowMainMenu();
+                StartCoroutine(requestService.Get("/user",
+                successUser =>
+                {
+                    Debug.Log(successUser);
+                    JObject responseUser = JObject.Parse(successUser);
+                    hrs.UserID = (int)responseUser.GetValue("id");
+
+                    // Go to menu
+                    mm.HideLogin();
+                    mm.ShowMainMenu();
+                },
+                errorUser =>
+                {
+                    Debug.Log(errorUser);
+                }
+                ));
             }, 
             error => {
                 Debug.Log(error);

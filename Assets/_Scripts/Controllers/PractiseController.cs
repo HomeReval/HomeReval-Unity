@@ -31,6 +31,7 @@ namespace Controllers
 
         // Get body drawer
         private IBodyDrawer bodyDrawer;
+        private IBodyDrawer exampleBodyDrawer;
 
         void Start()
         {
@@ -51,14 +52,19 @@ namespace Controllers
             GameObject body = (GameObject)Instantiate(Resources.Load("Prefabs/Body"));
             bodyDrawer = new BodyDrawer(body);
 
+            // Create bodyDrawer for exercise example
+            GameObject bodyRed = (GameObject)Instantiate(Resources.Load("Prefabs/BodyRed"));
+            exampleBodyDrawer = new BodyDrawer(bodyRed);
+
             // Get singleton session instance
             homeRevalSession = HomeRevalSession.Instance;
 
-            homeRevalSession.Token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjQsImlzcyI6IkhvbWVSZXZhbCBBUEkiLCJpYXQiOjE1Mjc5NzY0NDIsImV4cCI6MTUyNzk3NzM0Mn0.DiQBSQnSJl5OrGhk4bsyaFtK0QfKRnyWqx-UHzIcJyY";
+            //homeRevalSession.Token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjQsImlzcyI6IkhvbWVSZXZhbCBBUEkiLCJpYXQiOjE1Mjc5NzY0NDIsImV4cCI6MTUyNzk3NzM0Mn0.DiQBSQnSJl5OrGhk4bsyaFtK0QfKRnyWqx-UHzIcJyY";
 
-            StartCoroutine(requestService.Get("/exercise/4", 
+            StartCoroutine(requestService.Get("/exercise/"+ homeRevalSession.Exercises[homeRevalSession.currentExerciseIdx].Id, 
                 success =>
                 {
+                    // Decompress response and create ExerciseRecording
                     Debug.Log(success);
                 },
                 error =>
@@ -67,11 +73,12 @@ namespace Controllers
                 }
             ));
 
+            // Maak exercise object met recording opgehaald vanuit database
 
             // Set exercise for service temp
             //string json = File.ReadAllText(@"C:\Users\Stefan\Documents\exercise.json");
             //Exercise jsonExercise = JsonConvert.DeserializeObject<Exercise>(json);
-            //exerciseService.StartNewExercise(jsonExercise, text);
+            //exerciseService.StartNewExercise(jsonExercise, exampleBodyDrawer, text);
         }
 
         void FixedUpdate()
@@ -94,10 +101,14 @@ namespace Controllers
                             if (_bodies[i].IsTracked)
                             {
 
-                                //bodyDrawer.DrawSkeleton(_bodies[i].Joints);
-                                //ExerciseScore exerciseScore = exerciseService.Check(exerciseService.Convert(_bodies[i]));
+                                bodyDrawer.DrawSkeleton(_bodies[i].Joints);
+                                ExerciseScore exerciseScore = exerciseService.Check(exerciseService.Convert(_bodies[i], 
+                                    homeRevalSession
+                                        .Exercises[homeRevalSession.currentExerciseIdx]
+                                        .ExerciseRecording
+                                        .JointMappings));
 
-                                //Debug.Log(exerciseScore.Check);
+                                Debug.Log(exerciseScore.Check + " score " + exerciseScore.Score);
 
                                 // Exit after first tracked body is found
                                 break;

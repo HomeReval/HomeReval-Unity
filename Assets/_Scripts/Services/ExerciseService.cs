@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using HomeReval.Domain;
 using HomeReval.Validator;
 using UnityEngine.UI;
+using Views;
 using Windows.Kinect;
 
 namespace HomeReval.Services
@@ -10,9 +12,9 @@ namespace HomeReval.Services
     {
         private ExerciseValidator exerciseValidator;
 
-        public void StartNewExercise(Exercise exercise, Text text)
+        public void StartNewExercise(Exercise exercise, IBodyDrawer exampleBodyDrawer, Text text)
         {
-            exerciseValidator = new ExerciseValidator(exercise, text);
+            exerciseValidator = new ExerciseValidator(exercise, exampleBodyDrawer, text);
         }
 
         public ExerciseScore Check(ConvertedBody bodyLive)
@@ -25,9 +27,9 @@ namespace HomeReval.Services
             exerciseValidator = null;
         }
 
-        public ConvertedBody Convert(Body body)
+        public ConvertedBody Convert(Body body, List<Map.Mappings> jointMappings)
         {
-            return new ConvertedBody(body);
+            return new ConvertedBody(body, jointMappings);
         }
     }
 }

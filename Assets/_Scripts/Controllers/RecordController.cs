@@ -101,14 +101,13 @@ namespace Controllers
             // Get singleton session instance
             homeRevalSession = HomeRevalSession.Instance;
 
-
             // Temp for creating recording
             if (homeRevalSession.CurrentRecording == null)
             {
                 homeRevalSession.CurrentRecording = new Exercise
                 {
-                    /*StartDate = DateTime.Today,
-                    EndDate = DateTime.Today.AddDays(20),*/
+                    StartDate = DateTime.Today,
+                    EndDate = DateTime.Today.AddDays(20),
                     Amount = 5,
                     Name = "test",
                     Description = "test desc"
@@ -167,11 +166,10 @@ namespace Controllers
                                         bodyDrawer.DrawSkeleton(_bodies[i].Joints);
                                         if (state == RecordState.KinectRecording)
                                         {
-                                            exerciseConvertedBodies.Add(exerciseService.Convert(_bodies[i]));
-                                            /*exerciseRecordingFrames.Add(new ExerciseFrame
-                                            {
-                                                Body = _bodies[i]
-                                            });*/
+                                            exerciseConvertedBodies.Add(exerciseService.Convert(_bodies[i], homeRevalSession
+                                                .CurrentRecording
+                                                .ExerciseRecording
+                                                .JointMappings));
                                         }
 
                                         // Exit after first tracked body is found
@@ -197,12 +195,12 @@ namespace Controllers
 
                     case RecordState.ReplayPlaying:
 
-                        bodyDrawer.DrawSkeleton(homeRevalSession.CurrentRecording.ConvertedBodies[frame].CheckJoints);
+                        bodyDrawer.DrawSkeleton(homeRevalSession.CurrentRecording.ExerciseRecording.ConvertedBodies[frame].CheckJoints);
                         if (timer.ElapsedMilliseconds > 33)
                         {
                             frame++;
 
-                            if (frame >= homeRevalSession.CurrentRecording.ConvertedBodies.Count - 1)
+                            if (frame >= homeRevalSession.CurrentRecording.ExerciseRecording.ConvertedBodies.Count - 1)
                             {
                                 frame = 0;
                                 state = RecordState.ReplayPaused;
@@ -217,14 +215,14 @@ namespace Controllers
                             timer.Start();
 
                             // Update view
-                            frameText.text = "frame " + (frame + 1).ToString() + "/" + (homeRevalSession.CurrentRecording.ConvertedBodies.Count);
+                            frameText.text = "frame " + (frame + 1).ToString() + "/" + (homeRevalSession.CurrentRecording.ExerciseRecording.ConvertedBodies.Count);
                             replaySlider.value = frame;
                         }
 
                         break;
 
                     case RecordState.ReplayPaused:
-                        bodyDrawer.DrawSkeleton(homeRevalSession.CurrentRecording.ConvertedBodies[frame].CheckJoints);
+                        bodyDrawer.DrawSkeleton(homeRevalSession.CurrentRecording.ExerciseRecording.ConvertedBodies[frame].CheckJoints);
                         break;
                 }
             }
@@ -233,8 +231,8 @@ namespace Controllers
         // Events
         public void UpdateReplayView()
         {
-            replaySlider.maxValue = homeRevalSession.CurrentRecording.ConvertedBodies.Count-1;
-            frameText.text = "frame 1/" + (homeRevalSession.CurrentRecording.ConvertedBodies.Count);
+            replaySlider.maxValue = homeRevalSession.CurrentRecording.ExerciseRecording.ConvertedBodies.Count-1;
+            frameText.text = "frame 1/" + (homeRevalSession.CurrentRecording.ExerciseRecording.ConvertedBodies.Count);
         }
 
         IEnumerator HandGesture()
@@ -322,6 +320,7 @@ namespace Controllers
                 // Save current recording
                 homeRevalSession
                     .CurrentRecording
+                    .ExerciseRecording
                     .ConvertedBodies = exerciseConvertedBodies;
 
 
@@ -338,12 +337,12 @@ namespace Controllers
         // Save and send to API
         public void OnBtnSaveRecording()
         {
-            string convertedBodiesCompressed = Convert.ToBase64String(Gzip.Compress(JsonConvert.SerializeObject(homeRevalSession.CurrentRecording.ConvertedBodies)));
+            string exerciseRecordingCompressed = Convert.ToBase64String(Gzip.Compress(JsonConvert.SerializeObject(homeRevalSession.CurrentRecording.ExerciseRecording)));
 
             JObject exerciseJson = new JObject(
                 new JProperty("name", homeRevalSession.CurrentRecording.Name),
                 new JProperty("description", homeRevalSession.CurrentRecording.Description),
-                new JProperty("recording", convertedBodiesCompressed));
+                new JProperty("recording", exerciseRecordingCompressed));
 
 
             /*string exercisePlanning = "{\"startDate\":\""+ homeRevalSession.CurrentRecording.StartDate.ToLongDateString() + "\", " +
@@ -368,14 +367,14 @@ namespace Controllers
         {
             this.frame = (int)frame;
 
-            frameText.text = "frame " + (frame + 1).ToString() + "/" + (homeRevalSession.CurrentRecording.ConvertedBodies.Count);
-            replaySlider.maxValue = homeRevalSession.CurrentRecording.ConvertedBodies.Count;
+            frameText.text = "frame " + (frame + 1).ToString() + "/" + (homeRevalSession.CurrentRecording.ExerciseRecording.ConvertedBodies.Count);
+            replaySlider.maxValue = homeRevalSession.CurrentRecording.ExerciseRecording.ConvertedBodies.Count;
             replaySlider.value = frame;
         }
 
         public void OnBtnPlayReplay()
         {
-            if (homeRevalSession.CurrentRecording.ConvertedBodies == null || homeRevalSession.CurrentRecording.ConvertedBodies.Count == 0) return;
+            if (homeRevalSession.CurrentRecording.ExerciseRecording.ConvertedBodies == null || homeRevalSession.CurrentRecording.ExerciseRecording.ConvertedBodies.Count == 0) return;
 
             timer.Start();
 
@@ -397,15 +396,15 @@ namespace Controllers
 
         public void OnBtnCutReplay()
         {
-            if ((homeRevalSession.CurrentRecording.ConvertedBodies == null || homeRevalSession.CurrentRecording.ConvertedBodies.Count == 0) ||
-                 (homeRevalSession.CurrentRecording.ConvertedBodies.Count <= frame)) return;
+            if ((homeRevalSession.CurrentRecording.ExerciseRecording.ConvertedBodies == null || homeRevalSession.CurrentRecording.ExerciseRecording.ConvertedBodies.Count == 0) ||
+                 (homeRevalSession.CurrentRecording.ExerciseRecording.ConvertedBodies.Count <= frame)) return;
 
-            homeRevalSession.CurrentRecording.ConvertedBodies = homeRevalSession.CurrentRecording.ConvertedBodies.GetRange(0, frame);
+            homeRevalSession.CurrentRecording.ExerciseRecording.ConvertedBodies = homeRevalSession.CurrentRecording.ExerciseRecording.ConvertedBodies.GetRange(0, frame+1);
             frame = 0;
 
             // Update view
-            frameText.text = "frame " + (frame + 1).ToString() + "/" + (homeRevalSession.CurrentRecording.ConvertedBodies.Count);
-            replaySlider.maxValue = homeRevalSession.CurrentRecording.ConvertedBodies.Count;
+            frameText.text = "frame " + (frame + 1).ToString() + "/" + (homeRevalSession.CurrentRecording.ExerciseRecording.ConvertedBodies.Count);
+            replaySlider.maxValue = homeRevalSession.CurrentRecording.ExerciseRecording.ConvertedBodies.Count;
             replaySlider.value = frame;
 
         }
