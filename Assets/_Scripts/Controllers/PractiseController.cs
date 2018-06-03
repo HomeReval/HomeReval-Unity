@@ -1,8 +1,10 @@
 ﻿using HomeReval.Domain;
+using HomeReval.Helpers;
 using HomeReval.Services;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 using Views;
@@ -33,6 +35,8 @@ namespace Controllers
         private IBodyDrawer bodyDrawer;
         private IBodyDrawer exampleBodyDrawer;
 
+        private Exercise jsonExercise;
+
         void Start()
         {
             _sensor = KinectSensor.GetDefault();
@@ -59,13 +63,30 @@ namespace Controllers
             // Get singleton session instance
             homeRevalSession = HomeRevalSession.Instance;
 
-            //homeRevalSession.Token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjQsImlzcyI6IkhvbWVSZXZhbCBBUEkiLCJpYXQiOjE1Mjc5NzY0NDIsImV4cCI6MTUyNzk3NzM0Mn0.DiQBSQnSJl5OrGhk4bsyaFtK0QfKRnyWqx-UHzIcJyY";
+            homeRevalSession.Token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjQsImlzcyI6IkhvbWVSZXZhbCBBUEkiLCJpYXQiOjE1MjgwNTg0MjEsImV4cCI6MTUyODA1OTMyMX0.UhsDEhDdDVqcFclBaNSqYGdPZvAWubKPcukxT0y7lsc";
 
-            StartCoroutine(requestService.Get("/exercise/"+ homeRevalSession.Exercises[homeRevalSession.currentExerciseIdx].Id, 
+
+            StartCoroutine(requestService.Get("/exercise/10",//"/exercise/"+ homeRevalSession.Exercises[homeRevalSession.currentExerciseIdx].Id, 
                 success =>
                 {
                     // Decompress response and create ExerciseRecording
                     Debug.Log(success);
+                    JObject response = JObject.Parse(success);
+
+                    string exerciseRecordingJson = Gzip.DeCompress(Convert.FromBase64String(response.GetValue("recording").ToString()));
+
+                    ExerciseRecording exerciseRecording = JsonConvert.DeserializeObject<ExerciseRecording>(exerciseRecordingJson);
+                    
+                    jsonExercise = new Exercise
+                    {
+                        Id = Int32.Parse(response.GetValue("id").ToString()),
+                        Amount = 10,
+                        ExerciseRecording = exerciseRecording,
+                        Description = response.GetValue("description").ToString(),
+                        Name = response.GetValue("name").ToString()
+                    };
+
+                    exerciseService.StartNewExercise(jsonExercise, exampleBodyDrawer, text);
                 },
                 error =>
                 {
@@ -78,7 +99,6 @@ namespace Controllers
             // Set exercise for service temp
             //string json = File.ReadAllText(@"C:\Users\Stefan\Documents\exercise.json");
             //Exercise jsonExercise = JsonConvert.DeserializeObject<Exercise>(json);
-            //exerciseService.StartNewExercise(jsonExercise, exampleBodyDrawer, text);
         }
 
         void FixedUpdate()
@@ -103,8 +123,7 @@ namespace Controllers
 
                                 bodyDrawer.DrawSkeleton(_bodies[i].Joints);
                                 ExerciseScore exerciseScore = exerciseService.Check(exerciseService.Convert(_bodies[i], 
-                                    homeRevalSession
-                                        .Exercises[homeRevalSession.currentExerciseIdx]
+                                    jsonExercise
                                         .ExerciseRecording
                                         .JointMappings));
 

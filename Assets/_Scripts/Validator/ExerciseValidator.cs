@@ -12,9 +12,9 @@ namespace HomeReval.Validator
     {
         public enum ValidatorState { NotStarted, WaitingForNext, Checking, Done };
 
-        private const double margin = 5.0;
-        private const double middleMargin = 10.0;
-        private const double errorMargin = 15.0;
+        private const double margin = 10.0;
+        private const double middleMargin = 20.0;
+        private const double errorMargin = 30.0;
 
         private List<ExerciseScore> exerciseScores;
         private ExerciseRecording currentExercise;
@@ -154,8 +154,8 @@ namespace HomeReval.Validator
 
                     // Get angle difference between live and recorded date
                     double angleDifference = 180 - Math.Abs(Math.Abs(bodyJSON.JointResults[currentType].Angle - bodyLive.JointResults[currentType].Angle) - 180);
-                    /*if(currentType == JointType.ShoulderLeft)
-                        text.text = "angledifference: " + angleDifference + " jsonangle: "+ bodyJSON.JointResults[currentType].Angle + " Liveangle: " + bodyLive.JointResults[currentType].Angle;*/
+                    if(currentType == JointType.ShoulderLeft)
+                        text.text = "angledifference: " + angleDifference + " jsonangle: "+ bodyJSON.JointResults[currentType].Angle + " Liveangle: " + bodyLive.JointResults[currentType].Angle;
 
                     // Check if difference is bigger then the smallest margin
                     if (angleDifference <= (Math.Abs(margin) * -1) || angleDifference >= margin)
