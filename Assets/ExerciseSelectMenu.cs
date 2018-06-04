@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using HomeReval.Domain;
 using TMPro;
+using HomeReval.Services;
+using Newtonsoft.Json.Linq;
 
 public class ExerciseSelectMenu : MonoBehaviour {
 
@@ -15,15 +17,50 @@ public class ExerciseSelectMenu : MonoBehaviour {
     public TMP_Text exDesc;
     public TMP_Text amount;
 
-    public List<Exercise> exList = new List<Exercise>();
-    int currentExerciseIndex = 0;
+    //public List<Exercise> exList = new List<Exercise>();
+    //int currentExerciseIndex = 0;
     int maxExerciseIndex = 999;
+
+    HomeRevalSession hrs;
+
+    // Services
+    IRequestService requestService = new RequestService();
 
 	// Use this for initialization
 	void Start () {
+
         DateTime today = DateTime.Today;
 
-        Exercise ex1 = new Exercise {
+        hrs = HomeRevalSession.Instance;
+
+        // Get exercises
+        StartCoroutine(requestService.Get("/exerciseplanning/date/" + today.ToLongDateString(), success => 
+        {
+            //Debug.Log(success);
+            JArray response = JArray.Parse(success);
+
+            foreach (JObject exercisePlanning in response)
+            {
+                hrs.Exercises.Add(new Exercise
+                {
+                    Id = Convert.ToInt32(exercisePlanning.SelectToken("exercise.id").ToString()),
+                    StartDate = DateTime.Parse(exercisePlanning.SelectToken("startDate").ToString()),
+                    EndDate = DateTime.Parse(exercisePlanning.SelectToken("endDate").ToString()),
+                    Name = exercisePlanning.SelectToken("exercise.name").ToString(),
+                    Description = exercisePlanning.SelectToken("exercise.description").ToString(),
+                    Amount = Convert.ToInt32(exercisePlanning.SelectToken("amount").ToString())
+                });
+            }
+
+            // Switch exercise after receiving exercises
+            SwitchExercise(hrs.currentExerciseIdx);
+            maxExerciseIndex = hrs.Exercises.Count - 1;
+        },
+        error => {
+            Debug.Log(error);
+        }));
+
+        /*Exercise ex1 = new Exercise {
             Id = 0, 
             StartDate = today.AddDays(5), 
             EndDate = today.AddDays(10), 
@@ -51,14 +88,11 @@ public class ExerciseSelectMenu : MonoBehaviour {
             Description = "(234567890123465789012346578901234657890123465789)",
             ExerciseRecording = null,
             Amount = 1000
-        };
+        };*/
 
-        exList.Add(ex1);
+        /*exList.Add(ex1);
         exList.Add(ex2);
-        exList.Add(ex3);
-
-        maxExerciseIndex = exList.Count-1;
-        SwitchExercise(currentExerciseIndex);
+        exList.Add(ex3);*/
     }
 	
 	// Update is called once per frame
@@ -68,30 +102,30 @@ public class ExerciseSelectMenu : MonoBehaviour {
 
     public void NextExerciseButton()
     {
-        if (currentExerciseIndex < maxExerciseIndex)
+        if (hrs.currentExerciseIdx < maxExerciseIndex)
         {
-            currentExerciseIndex++;
-            SwitchExercise(currentExerciseIndex);
+            hrs.currentExerciseIdx++;
+            SwitchExercise(hrs.currentExerciseIdx);
         }
     }
 
     public void PreviousExerciseButton()
     {
-        if(currentExerciseIndex > 0 )
+        if(hrs.currentExerciseIdx > 0 )
         {
-            currentExerciseIndex--;
-            SwitchExercise(currentExerciseIndex);
+            hrs.currentExerciseIdx--;
+            SwitchExercise(hrs.currentExerciseIdx);
         }  
     }
 
 
     void SwitchExercise(int i)
     {
-        beginDate.text = exList[i].StartDate.ToString();
-        endDate.text = exList[i].EndDate.ToString();
-        exName.text = exList[i].Name;
-        exDesc.text = exList[i].Description;
-        amount.text = exList[i].Amount.ToString();
+        beginDate.text = hrs.Exercises[i].StartDate.ToString();
+        endDate.text = hrs.Exercises[i].EndDate.ToString();
+        exName.text = hrs.Exercises[i].Name;
+        exDesc.text = hrs.Exercises[i].Description;
+        amount.text = hrs.Exercises[i].Amount.ToString();
     }
 
     public void submit()

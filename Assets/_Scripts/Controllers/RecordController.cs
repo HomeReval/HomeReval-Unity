@@ -351,14 +351,39 @@ namespace Controllers
                 "\"amount\":" + homeRevalSession.CurrentRecording.Amount + "}";*/
 
             Debug.Log("request begint nu!");
-            StartCoroutine(requestService.Post("/exercise", exerciseJson.ToString(), success => {
-                Debug.Log(success);
-                //JObject response = JObject.Parse(success);
-                //Debug.Log(response.ToString());
-            },
-            error => {
-                Debug.Log(error);
-            }));
+            StartCoroutine(requestService.Post("/exercise", exerciseJson.ToString(), 
+                success => {
+                    Debug.Log(success);
+                    JObject response = JObject.Parse(success);
+                    //Debug.Log(response.ToString());
+
+                    JObject exercisePlanningJson = new JObject(
+                    new JProperty("startDate", homeRevalSession.CurrentRecording.StartDate.ToLongDateString()),
+                    new JProperty("endDate", homeRevalSession.CurrentRecording.EndDate.ToLongDateString()),
+                    new JProperty("amount", homeRevalSession.CurrentRecording.Amount),
+                    new JProperty("description", "Planning description die we nog niet kunnen invullen in unity dus deze is voor nu leeg."),
+                    new JProperty("userExercise", new JObject(
+                        new JProperty("user_ID", homeRevalSession.UserID),
+                        new JProperty("exercise_ID", response.GetValue("id").ToString())
+                        ))
+                    );
+
+                    Debug.Log("JSON EXERCISE PLANNING DIE IK VERZEND: " + exercisePlanningJson.ToString());
+
+                    // Save planning
+                    StartCoroutine(requestService.Post("/exerciseplanning", exercisePlanningJson.ToString(), 
+                        successPlanning => {
+                            Debug.Log(successPlanning);
+                        },
+                        errorPlanning => {
+                            Debug.Log(errorPlanning);
+                        }
+                    ));
+                },
+                error => {
+                    Debug.Log(error);
+                }
+            ));
 
         }
 

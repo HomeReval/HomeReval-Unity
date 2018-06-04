@@ -19,7 +19,13 @@ public sealed class HomeRevalSession
                 lock (syncRoot)
                 {
                     if (instance == null)
+                    {
                         instance = new HomeRevalSession();
+
+                        // Set exercises list
+                        instance.Exercises = new List<Exercise>();
+                    }
+                        
                 }
             }
 

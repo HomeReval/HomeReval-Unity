@@ -29,11 +29,13 @@ namespace Controllers
         private IExerciseService exerciseService = new ExerciseService();
 
         // Session singleton
-        private HomeRevalSession homeRevalSession;
+        private HomeRevalSession hrs;
 
         // Get body drawer
         private IBodyDrawer bodyDrawer;
         private IBodyDrawer exampleBodyDrawer;
+
+        private List<ConvertedBody> exerciseResultRecording;
 
         private Exercise jsonExercise;
 
@@ -61,17 +63,18 @@ namespace Controllers
             exampleBodyDrawer = new BodyDrawer(bodyRed);
 
             // Get singleton session instance
-            homeRevalSession = HomeRevalSession.Instance;
+            hrs = HomeRevalSession.Instance;
 
-            homeRevalSession.Token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjQsImlzcyI6IkhvbWVSZXZhbCBBUEkiLCJpYXQiOjE1MjgxMDk5MDMsImV4cCI6MTUyODExMDgwM30.kMg3xPi6FDDuocxY3Gzcd6g_C8UBmw8o4H2XaupzHuk";
+            //homeRevalSession.Token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjQsImlzcyI6IkhvbWVSZXZhbCBBUEkiLCJpYXQiOjE1MjgxMDk5MDMsImV4cCI6MTUyODExMDgwM30.kMg3xPi6FDDuocxY3Gzcd6g_C8UBmw8o4H2XaupzHuk";
 
-
-            StartCoroutine(requestService.Get("/exercise/13",//"/exercise/"+ homeRevalSession.Exercises[homeRevalSession.currentExerciseIdx].Id, 
+            StartCoroutine(requestService.Get("/exercise/"+ hrs.Exercises[hrs.currentExerciseIdx].Id, 
                 success =>
                 {
                     // Decompress response and create ExerciseRecording
                     Debug.Log(success);
                     JObject response = JObject.Parse(success);
+
+                    Debug.Log("Recording: " + response.GetValue("recording").ToString());
 
                     string exerciseRecordingJson = Gzip.DeCompress(Convert.FromBase64String(response.GetValue("recording").ToString()));
 
@@ -80,13 +83,15 @@ namespace Controllers
                     jsonExercise = new Exercise
                     {
                         Id = Int32.Parse(response.GetValue("id").ToString()),
-                        Amount = 10,
+                        Amount = 3,
                         ExerciseRecording = exerciseRecording,
                         Description = response.GetValue("description").ToString(),
                         Name = response.GetValue("name").ToString()
                     };
 
                     exerciseService.StartNewExercise(jsonExercise, exampleBodyDrawer, text);
+
+                    exerciseResultRecording = new List<ConvertedBody>();
                 },
                 error =>
                 {
@@ -121,11 +126,15 @@ namespace Controllers
                             if (_bodies[i].IsTracked)
                             {
 
-                                bodyDrawer.DrawSkeleton(_bodies[i].Joints);
-                                ExerciseScore exerciseScore = exerciseService.Check(exerciseService.Convert(_bodies[i], 
+                                ConvertedBody convertedBody = exerciseService.Convert(_bodies[i],
                                     jsonExercise
                                         .ExerciseRecording
-                                        .JointMappings));
+                                        .JointMappings);
+
+                                bodyDrawer.DrawSkeleton(_bodies[i].Joints);
+                                ExerciseScore exerciseScore = exerciseService.Check(convertedBody);
+
+                                exerciseResultRecording.Add(convertedBody);
 
                                 Debug.Log(exerciseScore.Check + " score " + exerciseScore.Score);
 
