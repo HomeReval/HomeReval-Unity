@@ -8,8 +8,8 @@ namespace HomeReval.Services
     class RequestService: IRequestService
     {
         private HomeRevalSession homeRevalSession;
-        //private const string API = "http://homereval.ga:5000/api";
-        private const string API = "http://localhost:58580/api";
+        private const string API = "http://homereval.ga:5000/api";
+        //private const string API = "http://localhost:58580/api";
 
 
         public RequestService()

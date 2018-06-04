@@ -5,15 +5,23 @@ using UnityEngine.SceneManagement;
 
 public class MenuManager : MonoBehaviour {
 
+    public GameObject loginScreen;
     public GameObject mainMenu;
     public GameObject optionsMenu;
-    public GameObject loginScreen;
     public GameObject exerciseMenu;
+    public GameObject newExerciseMenu;
+    public GameObject selectExerciseMenu;
 
-    public void SwitchToNextScene()
+    public void LoadRecordingScene()
     {
         int index = SceneManager.GetActiveScene().buildIndex;
         SceneManager.LoadScene(index + 1);
+    }
+
+    public void LoadPracticeScene()
+    {
+        int index = SceneManager.GetActiveScene().buildIndex;
+        SceneManager.LoadScene(index + 2);
     }
 
     public void HideOptions()
@@ -36,6 +44,16 @@ public class MenuManager : MonoBehaviour {
         exerciseMenu.SetActive(false);
     }
 
+    public void HideNewExerciseMenu()
+    {
+        newExerciseMenu.SetActive(false);
+    }
+
+    public void HideSelectExerciseMenu()
+    {
+        selectExerciseMenu.SetActive(false);
+    }
+
 
 
     public void ShowOptions()
@@ -56,6 +74,16 @@ public class MenuManager : MonoBehaviour {
     public void ShowExercise()
     {
         exerciseMenu.SetActive(true);
+    }
+
+    public void ShowNewExerciseMenu()
+    {
+        newExerciseMenu.SetActive(true);
+    }
+
+    public void ShowSelectExerciseMenu()
+    {
+        selectExerciseMenu.SetActive(true);
     }
 
 }

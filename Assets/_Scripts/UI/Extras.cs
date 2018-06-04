@@ -9,6 +9,7 @@ public class Extras : MonoBehaviour {
     public void LogOut()
     {
         LoginScreen.loggedIn = false;
+        HomeRevalSession.Instance.Token = "";
         mm.ShowLogin();
         mm.HideMainMenu();
     }

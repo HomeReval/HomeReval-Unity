@@ -88,7 +88,7 @@ public class ExerciseMenu : MonoBehaviour {
         {
             Submit(startDate, endDate, exerciseName.text, exerciseDescription.text, amnt, spineCheckbox, leftArmCheckbox, rightArmCheckbox, leftLegCheckbox, rightLegCheckbox);
             //Debug.Log("succesfully submitted");
-            mm.SwitchToNextScene();
+            mm.LoadRecordingScene();
         }
         else
         {

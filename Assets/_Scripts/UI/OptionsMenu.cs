@@ -25,9 +25,4 @@ public class OptionsMenu : MonoBehaviour {
 		PlayerPrefs.SetFloat ("volume", volume);
     }
 
-    public void ReturnButtonPressed()
-    {
-        mm.HideOptions();
-        mm.ShowMainMenu();
-    }
 }

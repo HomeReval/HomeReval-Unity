@@ -63,10 +63,10 @@ namespace Controllers
             // Get singleton session instance
             homeRevalSession = HomeRevalSession.Instance;
 
-            homeRevalSession.Token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjQsImlzcyI6IkhvbWVSZXZhbCBBUEkiLCJpYXQiOjE1MjgwNTg0MjEsImV4cCI6MTUyODA1OTMyMX0.UhsDEhDdDVqcFclBaNSqYGdPZvAWubKPcukxT0y7lsc";
+            homeRevalSession.Token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjQsImlzcyI6IkhvbWVSZXZhbCBBUEkiLCJpYXQiOjE1MjgxMDk5MDMsImV4cCI6MTUyODExMDgwM30.kMg3xPi6FDDuocxY3Gzcd6g_C8UBmw8o4H2XaupzHuk";
 
 
-            StartCoroutine(requestService.Get("/exercise/10",//"/exercise/"+ homeRevalSession.Exercises[homeRevalSession.currentExerciseIdx].Id, 
+            StartCoroutine(requestService.Get("/exercise/13",//"/exercise/"+ homeRevalSession.Exercises[homeRevalSession.currentExerciseIdx].Id, 
                 success =>
                 {
                     // Decompress response and create ExerciseRecording
