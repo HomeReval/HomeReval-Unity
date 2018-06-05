@@ -6,8 +6,8 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 using Views;
 using Windows.Kinect;
 
@@ -20,7 +20,6 @@ namespace Controllers
         // GameObjects
         public GameObject playButton;
         public GameObject stopButton;
-        public Text text;
 
         // State
         private PractiseState state;
@@ -44,6 +43,16 @@ namespace Controllers
         private List<ExerciseScore> exerciseResultScores;
 
         private Exercise jsonExercise;
+
+        // Score display
+        string baseScoreText = "Klaar\nScore: ";
+        public TMP_Text ScoreText;
+
+        //Completed View
+        public GameObject CompletedOverlay;
+
+        //Progress display
+        public TMP_Text ProgressText;
 
         void Start()
         {
@@ -98,7 +107,7 @@ namespace Controllers
                         Name = response.GetValue("name").ToString()
                     };
 
-                    exerciseService.StartNewExercise(jsonExercise, exampleBodyDrawer, text);
+                    //exerciseService.StartNewExercise(jsonExercise, exampleBodyDrawer);
 
                     exerciseResultRecording = new List<ConvertedBody>();
                     exerciseResultScores = new List<ExerciseScore>();
