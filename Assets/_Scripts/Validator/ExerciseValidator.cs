@@ -102,6 +102,8 @@ namespace HomeReval.Validator
                         frame = 0;
                         current++;
 
+                        UnityEngine.Debug.Log(current + "  -  " + exercise.Amount);
+
                         if (current == exercise.Amount)
                         {
                             state = ValidatorState.Done;
@@ -116,7 +118,7 @@ namespace HomeReval.Validator
 
                     // Check if user missed checks for more then 1 second and cancel current exercise
                     UnityEngine.Debug.Log(latestValidatedCheck < DateTime.Now.AddSeconds(-5));
-                    if (latestValidatedCheck < DateTime.Now.AddSeconds(-3))
+                    if (latestValidatedCheck < DateTime.Now.AddSeconds(-5))
                     {
                         state = ValidatorState.WaitingForNext;
                         frame = 0;
@@ -194,11 +196,19 @@ namespace HomeReval.Validator
             return exerciseScore;
         }
 
-        public ExerciseScore LatestScore 
+        /*public ExerciseScore LatestScore 
         {
             get {
                 if (exerciseScores.Count == 0) return null;
                 return exerciseScores[exerciseScores.Count - 1]; 
+            }
+        }*/
+
+        public ValidatorState State
+        {
+            get
+            {
+                return state;
             }
         }
     }

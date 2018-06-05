@@ -22,5 +22,7 @@ namespace HomeReval.Domain
 
         public int Amount { get; set; }
 
+        public int PlanningId { get; set; }
+
     }
 }

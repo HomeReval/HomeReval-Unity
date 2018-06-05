@@ -22,6 +22,11 @@ namespace HomeReval.Services
             return exerciseValidator.Check(bodyLive);
         }
 
+        public ExerciseValidator.ValidatorState State()
+        {
+            return exerciseValidator.State;
+        }
+
         public void Stop()
         {
             exerciseValidator = null;

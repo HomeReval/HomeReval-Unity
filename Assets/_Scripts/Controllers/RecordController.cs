@@ -12,6 +12,7 @@ using HomeReval.Helpers;
 using HomeReval.Domain;
 using HomeReval.Services;
 using Newtonsoft.Json.Linq;
+using UnityEngine.SceneManagement;
 
 namespace Controllers
 {
@@ -363,7 +364,7 @@ namespace Controllers
                     new JProperty("amount", homeRevalSession.CurrentRecording.Amount),
                     new JProperty("description", "Planning description die we nog niet kunnen invullen in unity dus deze is voor nu leeg."),
                     new JProperty("userExercise", new JObject(
-                        new JProperty("user_ID", homeRevalSession.UserID),
+                        new JProperty("user_ID", homeRevalSession.UserID.ToString()),
                         new JProperty("exercise_ID", response.GetValue("id").ToString())
                         ))
                     );
@@ -374,6 +375,7 @@ namespace Controllers
                     StartCoroutine(requestService.Post("/exerciseplanning", exercisePlanningJson.ToString(), 
                         successPlanning => {
                             Debug.Log(successPlanning);
+                            SceneManager.LoadScene(0);
                         },
                         errorPlanning => {
                             Debug.Log(errorPlanning);

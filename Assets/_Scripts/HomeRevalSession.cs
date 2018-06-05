@@ -36,6 +36,7 @@ public sealed class HomeRevalSession
     // User Session
     public List<Exercise> Exercises { get; set; }
     public int currentExerciseIdx { get; set; }
+    public int currentPlanningId { get; set; }
 
     // Recording session
     public Exercise CurrentRecording { get; set; }

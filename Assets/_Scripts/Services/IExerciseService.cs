@@ -12,6 +12,7 @@ namespace HomeReval.Services
         void StartNewExercise(Exercise exercise, IBodyDrawer exampleBodyDrawer, Text text);
         ExerciseScore Check(ConvertedBody bodyLive);
         ConvertedBody Convert(Body body, List<Map.Mappings> jointMappings);
+        ExerciseValidator.ValidatorState State();
         void Stop();
     }
 } 

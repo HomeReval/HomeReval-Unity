@@ -36,7 +36,7 @@ public class ExerciseSelectMenu : MonoBehaviour {
         // Get exercises
         StartCoroutine(requestService.Get("/exerciseplanning/date/" + today.ToLongDateString(), success => 
         {
-            //Debug.Log(success);
+            Debug.Log(success);
             JArray response = JArray.Parse(success);
 
             foreach (JObject exercisePlanning in response)
@@ -48,7 +48,8 @@ public class ExerciseSelectMenu : MonoBehaviour {
                     EndDate = DateTime.Parse(exercisePlanning.SelectToken("endDate").ToString()),
                     Name = exercisePlanning.SelectToken("exercise.name").ToString(),
                     Description = exercisePlanning.SelectToken("exercise.description").ToString(),
-                    Amount = Convert.ToInt32(exercisePlanning.SelectToken("amount").ToString())
+                    Amount = Convert.ToInt32(exercisePlanning.SelectToken("amount").ToString()),
+                    PlanningId = Convert.ToInt32(exercisePlanning.SelectToken("id").ToString())
                 });
             }
 
