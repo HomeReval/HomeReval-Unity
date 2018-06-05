@@ -14,5 +14,6 @@ namespace HomeReval.Services
         ConvertedBody Convert(Body body, List<Map.Mappings> jointMappings);
         ExerciseValidator.ValidatorState State();
         void Stop();
+        string Progression();
     }
 } 

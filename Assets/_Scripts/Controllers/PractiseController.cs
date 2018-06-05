@@ -152,6 +152,8 @@ namespace Controllers
                                             .ExerciseRecording
                                             .JointMappings);
 
+                                    ProgressText.text = exerciseService.Progression();
+
                                     ExerciseScore score = exerciseService.Check(convertedBody);
 
                                     if (exerciseService.State() == ExerciseValidator.ValidatorState.Checking)
@@ -165,25 +167,20 @@ namespace Controllers
 
                                     if (exerciseService.State() == ExerciseValidator.ValidatorState.Done)
                                     {
+                                        CompletedOverlay.SetActive(true);
+
                                         int endScore = 0;
                                         int total = 0;
-                                        //int[] scores = new int[] { };
+  
 
                                         for (int j = 0; j < exerciseResultScores.Count; j++)
                                         {
                                             total += exerciseResultScores[j].Score;
                                         }
 
-                                        Debug.Log(total);
-                                        Debug.Log(exerciseResultScores.Count);
                                         endScore = (int)Math.Round(((float)total / (float)exerciseResultScores.Count) * 25);
 
                                         string exerciseResultRecordingCompressed = Convert.ToBase64String(Gzip.Compress(JsonConvert.SerializeObject(exerciseResultRecording)));
-
-                                        Debug.Log("nietcompressedlengte: " + JsonConvert.SerializeObject(exerciseResultRecording).Length);
-                                        Debug.Log("compressedlengte: " + exerciseResultRecordingCompressed.Length);
-                                        Debug.Log("score: " + endScore);
-                                        Debug.Log("compressed in bytes: " + (Math.Floor((double)exerciseResultRecordingCompressed.Length / 3) + 1) * 4 + 1);
 
                                         JObject resultJson = new JObject(
                                             new JProperty("duration", 0),
@@ -191,7 +188,7 @@ namespace Controllers
                                             new JProperty("exercisePlanning_ID", hrs.currentPlanningId),
                                             new JProperty("result", exerciseResultRecordingCompressed));
 
-                                        Debug.Log("JSON DIE IK STUUR "+ resultJson.ToString());
+                                        ScoreText.text = baseScoreText + endScore + "%";
 
                                         StartCoroutine(
                                             requestService.Post("/exerciseresult", resultJson.ToString(), success =>

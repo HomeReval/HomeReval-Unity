@@ -186,6 +186,11 @@ namespace HomeReval.Validator
             return exerciseScore;
         }
 
+        public string Progression()
+        {
+            return (current+1) + "/" + exercise.Amount;
+        }
+
         /*public ExerciseScore LatestScore 
         {
             get {

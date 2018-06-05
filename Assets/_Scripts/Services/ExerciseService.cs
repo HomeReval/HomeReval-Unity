@@ -36,5 +36,10 @@ namespace HomeReval.Services
         {
             return new ConvertedBody(body, jointMappings);
         }
+
+        public string Progression()
+        {
+            return exerciseValidator.Progression();
+        }
     }
 }
