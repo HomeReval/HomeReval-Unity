@@ -69,8 +69,7 @@ namespace Controllers
                 }
             }
 
-            //state = PractiseState.KinectPaused;
-            state = PractiseState.KinectChecking;
+            state = PractiseState.KinectPaused;
 
             // Create bodyDrawer and body from prefab
             GameObject body = (GameObject)Instantiate(Resources.Load("Prefabs/Body"));
@@ -81,9 +80,7 @@ namespace Controllers
             exampleBodyDrawer = new BodyDrawer(bodyRed);
 
             // Get singleton session instance
-            hrs = HomeRevalSession.Instance;
-
-            //homeRevalSession.Token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjQsImlzcyI6IkhvbWVSZXZhbCBBUEkiLCJpYXQiOjE1MjgxMDk5MDMsImV4cCI6MTUyODExMDgwM30.kMg3xPi6FDDuocxY3Gzcd6g_C8UBmw8o4H2XaupzHuk";
+            hrs = HomeRevalSession.Instance;            
 
             StartCoroutine(requestService.Get("/exercise/"+ hrs.Exercises[hrs.currentExerciseIdx].Id, 
                 success =>
@@ -107,7 +104,7 @@ namespace Controllers
                         Name = response.GetValue("name").ToString()
                     };
 
-                    //exerciseService.StartNewExercise(jsonExercise, exampleBodyDrawer);
+                    exerciseService.StartNewExercise(jsonExercise, exampleBodyDrawer);
 
                     exerciseResultRecording = new List<ConvertedBody>();
                     exerciseResultScores = new List<ExerciseScore>();
@@ -146,14 +143,14 @@ namespace Controllers
                         {
                             if (_bodies[i].IsTracked)
                             {
+                                bodyDrawer.DrawSkeleton(_bodies[i].Joints);
+
                                 if (state == PractiseState.KinectChecking)
                                 {
                                     ConvertedBody convertedBody = exerciseService.Convert(_bodies[i],
                                         jsonExercise
                                             .ExerciseRecording
                                             .JointMappings);
-
-                                    bodyDrawer.DrawSkeleton(_bodies[i].Joints);
 
                                     ExerciseScore score = exerciseService.Check(convertedBody);
 
@@ -232,5 +229,11 @@ namespace Controllers
             }
 
         }
+
+        public void OnBtnStart()
+        {
+            state = PractiseState.KinectChecking;
+        }
+
     }
 }

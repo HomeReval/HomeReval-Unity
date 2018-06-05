@@ -8,8 +8,8 @@ namespace HomeReval.Services
     class RequestService: IRequestService
     {
         private HomeRevalSession homeRevalSession;
-        private const string API = "http://homereval.ga:5000/api";
-        //private const string API = "http://localhost:58580/api";
+        //private const string API = "http://homereval.ga:5000/api";
+        private const string API = "http://localhost:58580/api";
 
 
         public RequestService()
@@ -29,6 +29,8 @@ namespace HomeReval.Services
 
         private IEnumerator getRequest(string path, /*string json,*/ Action<string> success, Action<string> error)
         {
+            UnityEngine.Debug.Log("API PATH: "+API + path);
+
             var uwr = new UnityWebRequest(API + path, "GET");
             //byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
             //uwr.uploadHandler = (UploadHandler)new UploadHandlerRaw(jsonToSend);

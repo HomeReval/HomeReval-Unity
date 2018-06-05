@@ -12,9 +12,9 @@ namespace HomeReval.Services
     {
         private ExerciseValidator exerciseValidator;
 
-        public void StartNewExercise(Exercise exercise, IBodyDrawer exampleBodyDrawer, Text text)
+        public void StartNewExercise(Exercise exercise, IBodyDrawer exampleBodyDrawer)
         {
-            exerciseValidator = new ExerciseValidator(exercise, exampleBodyDrawer, text);
+            exerciseValidator = new ExerciseValidator(exercise, exampleBodyDrawer);
         }
 
         public ExerciseScore Check(ConvertedBody bodyLive)

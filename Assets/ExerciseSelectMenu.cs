@@ -33,8 +33,10 @@ public class ExerciseSelectMenu : MonoBehaviour {
 
         hrs = HomeRevalSession.Instance;
 
+        Debug.Log("TODAY: " + today.ToString("yyyy-MM-dd"));
+
         // Get exercises
-        StartCoroutine(requestService.Get("/exerciseplanning/date/" + today.ToLongDateString(), success => 
+        StartCoroutine(requestService.Get("/exerciseplanning/date/"+today.ToString("yyyy-MM-dd"), success => 
         {
             Debug.Log(success);
             JArray response = JArray.Parse(success);

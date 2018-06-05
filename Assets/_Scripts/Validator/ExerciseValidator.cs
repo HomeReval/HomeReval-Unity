@@ -29,10 +29,7 @@ namespace HomeReval.Validator
         // View
         private IBodyDrawer exampleBodyDrawer;
 
-        // Temp
-        private Text text;
-
-        public ExerciseValidator(Exercise exercise, IBodyDrawer exampleBodyDrawer, Text text)
+        public ExerciseValidator(Exercise exercise, IBodyDrawer exampleBodyDrawer)
         {
             // Set default state
             state = ValidatorState.NotStarted;
@@ -43,9 +40,6 @@ namespace HomeReval.Validator
             exerciseScores = new List<ExerciseScore>();
 
             this.exampleBodyDrawer = exampleBodyDrawer;
-
-            // Temp
-            this.text = text;
         }
 
         public ExerciseScore Check(ConvertedBody bodyLive)
@@ -56,8 +50,6 @@ namespace HomeReval.Validator
             // Check move
             ExerciseScore exerciseScore;
             exerciseScore = Validate(bodyLive, bodyJSON);
-
-            text.text = "state: " + state+" frame: " +frame + " score: " + exerciseScore.Score + " current: " + current;
 
             // Draw red body with current frame
             exampleBodyDrawer.DrawSkeleton(bodyJSON.CheckJoints);
@@ -156,8 +148,6 @@ namespace HomeReval.Validator
 
                     // Get angle difference between live and recorded date
                     double angleDifference = 180 - Math.Abs(Math.Abs(bodyJSON.JointResults[currentType].Angle - bodyLive.JointResults[currentType].Angle) - 180);
-                    if(currentType == JointType.ShoulderLeft)
-                        text.text = "angledifference: " + angleDifference + " jsonangle: "+ bodyJSON.JointResults[currentType].Angle + " Liveangle: " + bodyLive.JointResults[currentType].Angle;
 
                     // Check if difference is bigger then the smallest margin
                     if (angleDifference <= (Math.Abs(margin) * -1) || angleDifference >= margin)
