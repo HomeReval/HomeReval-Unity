@@ -124,8 +124,8 @@ public class ExerciseSelectMenu : MonoBehaviour {
 
     void SwitchExercise(int i)
     {
-        beginDate.text = hrs.Exercises[i].StartDate.ToString();
-        endDate.text = hrs.Exercises[i].EndDate.ToString();
+        beginDate.text = hrs.Exercises[i].StartDate.ToString("dd/MM/yyyy");
+        endDate.text = hrs.Exercises[i].EndDate.ToString("dd/MM/yyyy");
         exName.text = hrs.Exercises[i].Name;
         exDesc.text = hrs.Exercises[i].Description;
         amount.text = hrs.Exercises[i].Amount.ToString();
