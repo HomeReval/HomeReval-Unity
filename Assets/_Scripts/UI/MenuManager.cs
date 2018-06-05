@@ -12,6 +12,15 @@ public class MenuManager : MonoBehaviour {
     public GameObject newExerciseMenu;
     public GameObject selectExerciseMenu;
 
+    void Start()
+    {
+        if (!string.IsNullOrEmpty(HomeRevalSession.Instance.Token))
+        {
+            HideLogin();
+            ShowMainMenu();
+        }
+    }
+
     public void LoadRecordingScene()
     {
         int index = SceneManager.GetActiveScene().buildIndex;
