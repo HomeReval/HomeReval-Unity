@@ -9,8 +9,8 @@ public class LoginScreen : MonoBehaviour {
 
     public TMP_Text messageText;
 
-    string username = "nickwindt@hotmail.nl";
-    string password = "password";
+    string username = "";
+    string password = "";
 
     public static bool loggedIn = false;
 
@@ -29,13 +29,6 @@ public class LoginScreen : MonoBehaviour {
 
     public void Login()
     {
-
-
-
-        //windowmanagement
-        //mm.HideLogin();
-        //mm.ShowMainMenu();
-
         Debug.Log("{ \"username\" : \""+username+ "\", \"password\" : \"" + password + "\" }");
 
         //APICALL

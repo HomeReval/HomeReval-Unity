@@ -6,6 +6,8 @@ using TMPro;
 
 public class EndDateValidator : MonoBehaviour {
 
+    DateTime currenDate = DateTime.Today.AddDays(14);
+
     int dayMin = 1;
     int dayMax = 31;
     int monthMin = 1;
@@ -16,6 +18,13 @@ public class EndDateValidator : MonoBehaviour {
     public TMP_InputField day;
     public TMP_InputField month;
     public TMP_InputField year;
+
+    private void Awake()
+    {
+        day.text = currenDate.Day.ToString();
+        month.text = currenDate.Month.ToString();
+        year.text = currenDate.Year.ToString();
+    }
 
     public void OnDayChanged(string Sinput)
     {
