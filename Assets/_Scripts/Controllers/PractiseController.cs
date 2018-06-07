@@ -5,6 +5,7 @@ using HomeReval.Validator;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -54,8 +55,26 @@ namespace Controllers
         //Progress display
         public TMP_Text ProgressText;
 
+        //textObject GestureControl
+        public TMP_Text leftHandStateText;
+        public TMP_Text rightHandStateText;
+        public TMP_Text TimerText;
+        public TMP_Text TimerCountdownText;
+
+        //Colors
+        Color original = Color.red;
+        Color countdown = Color.cyan;
+
+        //Handstates
+        public bool leftHandClosed = false;
+        public bool rightHandClosed = false;
+
         void Start()
         {
+
+            TimerText.text = "";
+            TimerCountdownText.text = "";
+
             _sensor = KinectSensor.GetDefault();
 
             if (_sensor != null)
@@ -68,6 +87,8 @@ namespace Controllers
                     _sensor.Open();
                 }
             }
+
+            StartCoroutine(HandGesture());
 
             state = PractiseState.KinectPaused;
 
@@ -143,6 +164,27 @@ namespace Controllers
                         {
                             if (_bodies[i].IsTracked)
                             {
+                                if (_bodies[i].HandLeftState == HandState.Closed)
+                                {
+                                    leftHandClosed = true;
+                                    leftHandStateText.text = "Closed";
+                                }
+                                else //if (_bodies[i].HandLeftState == HandState.Open)
+                                {
+                                    leftHandClosed = false;
+                                    leftHandStateText.text = "Open";
+                                }
+                                if (_bodies[i].HandRightState == HandState.Closed)
+                                {
+                                    rightHandClosed = true;
+                                    rightHandStateText.text = "Closed";
+                                }
+                                else //if (_bodies[i].HandRightState == HandState.Open)
+                                {
+                                    rightHandClosed = false;
+                                    rightHandStateText.text = "Open";
+                                }
+
                                 bodyDrawer.DrawSkeleton(_bodies[i].Joints);
 
                                 if (state == PractiseState.KinectChecking)
@@ -229,7 +271,68 @@ namespace Controllers
 
         public void OnBtnStart()
         {
-            state = PractiseState.KinectChecking;
+            StartCoroutine(RecordCountdown());
+        }
+
+        IEnumerator HandGesture()
+        {
+            float interval = 3.0f;
+            bool destroyLoop = false;
+            while (!destroyLoop)
+            {
+                //lower interval
+                interval -= 0.5f;
+                //wait for 0.5 seconds
+                yield return new WaitForSeconds(0.5f);
+
+                //both hands closed
+                if (leftHandClosed && rightHandClosed)
+                {
+                    //set timer text to interval
+                    TimerText.color = original;
+                    TimerText.text = interval.ToString() + "s";
+                    //if the interval drops below 0.5 continue
+                    if (interval <= 0.5f)
+                    {
+                        if (state == PractiseState.KinectPaused)
+                        {
+                            TimerText.text = "START";
+                            OnBtnStart();
+                            destroyLoop = true;
+                        }
+                        interval = 3.0f;
+                    }
+                }
+                else
+                {
+                    interval = 3.0f;
+                    TimerText.text = "";
+                }
+            }
+        }
+
+        IEnumerator RecordCountdown()
+        {
+            float interval = 3.0f;
+            while (interval > 0.5f)
+            {
+                //lower interval
+                interval -= 0.5f;
+                //wait for 0.5 seconds
+                yield return new WaitForSeconds(0.5f);
+                //set timer text to interval
+                TimerCountdownText.color = countdown;
+                TimerCountdownText.text = interval.ToString() + "s";
+                //if the interval drops below 0.5 continue
+                if (interval <= 0.5f)
+                {
+                    TimerCountdownText.text = "Begin oefening";
+
+                    state = PractiseState.KinectChecking;
+                    yield return new WaitForSeconds(0.5f);
+                    TimerCountdownText.text = "";
+                }
+            }
         }
 
     }
