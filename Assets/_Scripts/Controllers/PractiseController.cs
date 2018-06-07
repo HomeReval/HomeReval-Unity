@@ -326,6 +326,7 @@ namespace Controllers
                 //if the interval drops below 0.5 continue
                 if (interval <= 0.5f)
                 {
+                    TimerText.text = "";
                     TimerCountdownText.text = "Begin oefening";
 
                     state = PractiseState.KinectChecking;

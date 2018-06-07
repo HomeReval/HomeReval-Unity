@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class MenuManager : MonoBehaviour {
@@ -11,6 +12,8 @@ public class MenuManager : MonoBehaviour {
     public GameObject exerciseMenu;
     public GameObject newExerciseMenu;
     public GameObject selectExerciseMenu;
+    public GameObject logOutBtn;
+    public GameObject QuitBtn;
 
     void Start()
     {
@@ -46,6 +49,8 @@ public class MenuManager : MonoBehaviour {
     public void HideLogin()
     {
         loginScreen.SetActive(false);
+        QuitBtn.SetActive(false);
+        logOutBtn.SetActive(true);
     }
 
     public void HideExercise()
@@ -78,6 +83,8 @@ public class MenuManager : MonoBehaviour {
     public void ShowLogin()
     {
         loginScreen.SetActive(true);
+        QuitBtn.SetActive(true);
+        logOutBtn.SetActive(false);
     }
 
     public void ShowExercise()
