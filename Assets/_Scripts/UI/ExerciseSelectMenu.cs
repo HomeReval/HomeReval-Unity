@@ -6,6 +6,7 @@ using HomeReval.Domain;
 using TMPro;
 using HomeReval.Services;
 using Newtonsoft.Json.Linq;
+using System.Linq;
 
 public class ExerciseSelectMenu : MonoBehaviour {
 
@@ -39,9 +40,10 @@ public class ExerciseSelectMenu : MonoBehaviour {
         StartCoroutine(requestService.Get("/exerciseplanning/date/"+today.ToString("yyyy-MM-dd"), success => 
         {
             Debug.Log(success);
-            JArray response = JArray.Parse(success);
+            //JArray response = JArray.Parse(success);
+            List<JObject> response = JArray.Parse(success).ToObject<List<JObject>>();
 
-            foreach (JObject exercisePlanning in response)
+            foreach (JObject exercisePlanning in response.OrderByDescending(o => o.SelectToken("exercise.id")).ToList())
             {
                 hrs.Exercises.Add(new Exercise
                 {

@@ -210,6 +210,7 @@ namespace Controllers
                                     if (exerciseService.State() == ExerciseValidator.ValidatorState.Done)
                                     {
                                         CompletedOverlay.SetActive(true);
+                                        TimerText.text = "";
 
                                         int endScore = 0;
                                         int total = 0;
